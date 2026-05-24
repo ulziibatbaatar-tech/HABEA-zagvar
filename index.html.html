@@ -1,0 +1,1112 @@
+<!DOCTYPE html>
+<html lang="mn">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>ХАБЭА — Цахим бүртгэл</title>
+<meta name="theme-color" content="#1a4a8a"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="apple-mobile-web-app-title" content="ХАБЭА"/>
+<meta name="mobile-web-app-capable" content="yes"/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;500;700&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{--g:#1a4a8a;--gl:#4a9eff;--gd:#0d2a5a;--gp:#f0f5ff;--gm:#e6eeff;--ink:#1a2040;--mut:#5a6b8f;--bdr:#c0d0e8;--wh:#fff;--shd:0 4px 24px rgba(26,74,138,.10);}
+body{font-family:'DM Sans',sans-serif;background:var(--gp);color:var(--ink);min-height:100vh;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:translateY(0);}}
+@keyframes toastIn{from{opacity:0;transform:translate(-50%,-14px);}to{opacity:1;transform:translate(-50%,0);}}
+@keyframes scaleIn{from{opacity:0;transform:scale(.94);}to{opacity:1;transform:scale(1);}}
+@keyframes checkDraw{from{stroke-dashoffset:100;}to{stroke-dashoffset:0;}}
+@keyframes spin{to{transform:rotate(360deg);}}
+.fadeUp{animation:fadeUp .35s ease both;}.fadeUp-1{animation-delay:.06s;}.fadeUp-2{animation-delay:.12s;}
+.scaleIn{animation:scaleIn .3s cubic-bezier(.34,1.56,.64,1) both;}
+.page{min-height:100vh;display:flex;flex-direction:column;}
+.center-page{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;}
+.glass{background:rgba(255,255,255,.92);backdrop-filter:blur(12px);border:1px solid var(--bdr);border-radius:20px;box-shadow:var(--shd);}
+.card{background:var(--wh);border:1px solid var(--bdr);border-radius:16px;padding:18px;box-shadow:0 2px 12px rgba(26,74,138,.06);margin-bottom:12px;}
+.card-head{font-family:'DM Serif Display',serif;font-size:14px;color:var(--g);margin-bottom:14px;}
+.inp{width:100%;padding:11px 14px;border:1.5px solid var(--bdr);border-radius:10px;font-size:14px;font-family:'DM Sans',sans-serif;color:var(--ink);background:var(--wh);outline:none;transition:border .2s,box-shadow .2s;}
+.inp:focus{border-color:var(--g);box-shadow:0 0 0 3px rgba(26,74,138,.1);}
+.inp-label{font-size:11px;font-weight:700;color:var(--mut);letter-spacing:.06em;text-transform:uppercase;margin-bottom:5px;}
+.inp-wrap{margin-bottom:10px;position:relative;}
+.btn{display:block;width:100%;padding:13px;border:none;border-radius:12px;font-size:14px;font-weight:700;font-family:'DM Sans',sans-serif;cursor:pointer;transition:all .18s;text-align:center;}
+.btn-p{background:linear-gradient(135deg,var(--g),var(--gd));color:#fff;box-shadow:0 4px 16px rgba(26,74,138,.3);}
+.btn-p:hover{transform:translateY(-1px);}.btn-p:disabled{opacity:.6;transform:none;cursor:not-allowed;}
+.btn-o{background:transparent;color:var(--g);border:1.5px solid var(--bdr);}.btn-o:hover{background:var(--gp);}
+.btn-d{background:#e74c3c;color:#fff;border:none;}
+.btn-sm{padding:8px 14px;width:auto;font-size:12px;border-radius:8px;}
+.home-bg{background:linear-gradient(160deg,var(--gd) 0%,var(--g) 60%,#1e5aaa 100%);position:relative;overflow:hidden;}
+.home-bg::after{content:'ХАБЭА';position:absolute;bottom:-20px;right:-10px;font-family:'DM Serif Display',serif;font-size:120px;color:rgba(255,255,255,.03);white-space:nowrap;pointer-events:none;user-select:none;}
+.home-inner{position:relative;z-index:1;width:100%;max-width:360px;text-align:center;}
+.home-div{width:50px;height:2px;background:linear-gradient(90deg,transparent,var(--gl),transparent);margin:16px auto 36px;}
+.btn-ghost{padding:14px;background:rgba(74,158,255,.1);color:var(--gl);border:1px solid rgba(74,158,255,.35);border-radius:12px;font-size:14px;font-weight:700;font-family:'DM Sans',sans-serif;cursor:pointer;transition:all .18s;width:100%;}
+.btn-ghost:hover{background:rgba(74,158,255,.18);}
+.step-ind{display:flex;gap:4px;justify-content:center;padding:12px 0;}
+.step-dot{width:26px;height:4px;border-radius:2px;background:var(--bdr);transition:all .25s;}
+.step-dot.done{background:var(--gl);}.step-dot.cur{background:var(--g);width:36px;}
+.sig-outer{border:1.5px dashed var(--bdr);border-radius:12px;background:#fff;position:relative;overflow:hidden;cursor:crosshair;}
+.sig-hint{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#aaa;font-size:12px;pointer-events:none;transition:opacity .2s;}
+.sig-clear{position:absolute;top:8px;right:8px;background:rgba(231,76,60,.85);color:#fff;border:none;border-radius:6px;padding:3px 8px;font-size:11px;cursor:pointer;font-family:inherit;}
+.check-cat{font-size:11px;font-weight:700;color:var(--mut);letter-spacing:.06em;text-transform:uppercase;margin:12px 0 6px;}
+.check-item{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:10px;cursor:pointer;user-select:none;margin-bottom:3px;}
+.check-item:hover{background:var(--gp);}
+.check-box{width:20px;height:20px;border:2px solid var(--bdr);border-radius:6px;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .15s;}
+.check-box.on{background:var(--g);border-color:var(--g);}
+.check-txt{font-size:13px;}
+.instr-item{display:flex;gap:10px;padding:9px 0;border-bottom:1px solid var(--gm);}
+.instr-num{width:22px;height:22px;background:var(--g);color:#fff;border-radius:50%;font-size:11px;font-weight:700;flex-shrink:0;display:flex;align-items:center;justify-content:center;}
+.instr-txt{font-size:13px;line-height:1.55;}
+.confirm-wrap{display:flex;align-items:center;gap:10px;background:var(--gp);border:1.5px solid var(--bdr);border-radius:12px;padding:12px;margin-top:12px;cursor:pointer;}
+.confirm-box{width:22px;height:22px;border:2px solid var(--g);border-radius:6px;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .15s;}
+.confirm-box.on{background:var(--g);border-color:var(--g);}
+.toast{position:fixed;top:16px;left:50%;transform:translateX(-50%);padding:10px 20px;border-radius:12px;font-size:13px;font-weight:600;box-shadow:0 6px 24px rgba(0,0,0,.2);z-index:9999;white-space:nowrap;animation:toastIn .25s ease;color:#fff;}
+.ok-circle{width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,var(--g),var(--gd));display:flex;align-items:center;justify-content:center;margin:0 auto 20px;box-shadow:0 8px 24px rgba(26,74,138,.3);}
+.mgr-hdr{background:linear-gradient(135deg,var(--gd),var(--g));padding:16px 20px 0;border-bottom:3px solid var(--gl);}
+.mgr-tabs{display:flex;gap:2px;margin-top:10px;}
+.mgr-tab{flex:1;padding:7px 1px;font-size:9px;font-weight:700;font-family:'DM Sans',sans-serif;border:none;cursor:pointer;background:transparent;color:rgba(255,255,255,.5);border-radius:10px 10px 0 0;transition:all .18s;}
+.mgr-tab.on{background:var(--gp);color:var(--g);}
+.mgr-body{max-width:640px;margin:0 auto;padding:16px 16px 80px;}
+.stat-row{display:flex;gap:8px;margin-bottom:14px;}
+.stat-box{flex:1;background:var(--wh);border:1px solid var(--bdr);border-radius:14px;padding:14px 8px;text-align:center;}
+.stat-ico{font-size:18px;margin-bottom:4px;}
+.stat-val{font-family:'DM Serif Display',serif;font-size:26px;color:var(--g);}
+.stat-lbl{font-size:10px;color:var(--mut);font-weight:700;letter-spacing:.05em;text-transform:uppercase;}
+.w-row{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--gp);}
+.w-row:last-child{border-bottom:none;}
+.w-av{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--g),var(--gd));display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px;font-weight:700;flex-shrink:0;}
+.w-name{font-weight:700;font-size:13px;}.w-sub{font-size:11px;color:var(--mut);}
+.w-sig{height:34px;width:70px;object-fit:contain;border:1px solid var(--bdr);border-radius:6px;}
+.badge{display:inline-flex;align-items:center;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;}
+.bg-g{background:rgba(26,74,138,.1);color:var(--g);}.bg-o{background:rgba(243,156,18,.12);color:#d35400;}
+.bg-r{background:rgba(231,76,60,.1);color:#c0392b;}.bg-b{background:rgba(41,128,185,.1);color:#2474a8;}
+.name-dropdown{position:absolute;top:100%;left:0;right:0;background:var(--wh);border:1.5px solid var(--bdr);z-index:300;border-radius:0 0 12px 12px;box-shadow:0 8px 24px rgba(0,0,0,.12);max-height:220px;overflow-y:auto;}
+.name-dropdown-item{padding:10px 14px;font-size:13px;border-bottom:1px solid var(--gp);cursor:pointer;display:flex;align-items:center;gap:8px;}
+.name-dropdown-item:last-child{border-bottom:none;}
+.name-dropdown-item:hover{background:var(--gp);}
+.name-dropdown-empty{padding:12px 14px;font-size:13px;color:var(--mut);text-align:center;}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:1000;display:flex;align-items:center;justify-content:center;padding:20px;}
+.modal-card{background:var(--wh);border-radius:20px;padding:24px;width:100%;max-width:340px;box-shadow:0 20px 60px rgba(0,0,0,.25);animation:scaleIn .25s cubic-bezier(.34,1.56,.64,1) both;}
+.modal-title{font-family:'DM Serif Display',serif;font-size:16px;color:var(--g);margin-bottom:16px;}
+.sel{width:100%;padding:11px 14px;border:1.5px solid var(--bdr);border-radius:10px;font-size:14px;font-family:'DM Sans',sans-serif;color:var(--ink);background:var(--wh);outline:none;transition:border .2s;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%235a6b8f' stroke-width='1.8' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;}
+.sel:focus{border-color:var(--g);box-shadow:0 0 0 3px rgba(26,74,138,.1);}
+.n-banner{background:#eff6ff;border:1px solid #bfdbfe;border-radius:10px;padding:10px 14px;font-size:12px;color:#2474a8;margin-bottom:12px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.sync-bar{background:var(--gm);border:1px solid var(--bdr);border-radius:10px;padding:8px 12px;font-size:11px;color:var(--mut);margin-bottom:10px;display:flex;align-items:center;gap:6px;}
+.spin{display:inline-block;animation:spin .8s linear infinite;}
+.pin-card{width:100%;max-width:340px;padding:32px;text-align:center;}
+.pin-dots{display:flex;justify-content:center;gap:10px;margin:20px 0;}
+.pin-dot{width:14px;height:14px;border-radius:50%;border:2px solid var(--bdr);transition:all .2s;}
+.pin-dot.on{background:var(--g);border-color:var(--g);}
+.pin-pad{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;max-width:240px;margin:0 auto;}
+.pin-btn{padding:14px;background:var(--wh);border:1.5px solid var(--bdr);border-radius:12px;font-size:18px;font-weight:700;font-family:'DM Serif Display',serif;cursor:pointer;transition:all .15s;color:var(--ink);}
+.pin-btn:hover{background:var(--gp);border-color:var(--g);}.pin-btn:active{transform:scale(.95);}
+.pin-0{grid-column:2;}.pin-del{font-size:14px;color:var(--mut);}
+.range-wrap{display:flex;align-items:center;gap:10px;margin:8px 0 12px;}
+.range-wrap input[type=range]{flex:1;accent-color:var(--g);}
+.range-lbl{font-size:13px;font-weight:700;color:var(--g);min-width:36px;text-align:right;}
+.w-row-blocked{background:#fef2f2;border-radius:10px;padding:10px;margin-bottom:4px;}
+.guide-step{background:var(--wh);border:1px solid var(--bdr);border-radius:14px;padding:16px;margin-bottom:10px;}
+.guide-step-head{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+.guide-step-num{width:28px;height:28px;background:linear-gradient(135deg,var(--g),var(--gd));color:#fff;border-radius:50%;font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.guide-step-title{font-family:'DM Serif Display',serif;font-size:14px;color:var(--g);}
+.guide-step p{font-size:12px;color:var(--mut);line-height:1.65;margin-bottom:8px;}
+.guide-step ol,.guide-step ul{font-size:12px;color:var(--mut);line-height:1.65;padding-left:18px;margin-bottom:8px;}
+.guide-step li{margin-bottom:3px;}
+.code-block{background:#0d1117;color:#58a6ff;border-radius:10px;padding:12px 14px;font-family:monospace;font-size:11px;line-height:1.6;overflow-x:auto;position:relative;margin:8px 0;white-space:pre;}
+.copy-btn{position:absolute;top:6px;right:8px;background:rgba(88,166,255,.15);color:#58a6ff;border:1px solid rgba(88,166,255,.3);border-radius:6px;padding:3px 10px;font-size:10px;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:700;}
+.copy-btn:hover{background:rgba(88,166,255,.25);}
+.loc-card{background:linear-gradient(135deg,var(--gp),var(--gm));border:1.5px solid var(--bdr);border-radius:14px;padding:14px;margin-bottom:10px;display:flex;align-items:flex-start;gap:12px;}
+.loc-icon{font-size:28px;flex-shrink:0;}
+.loc-info h4{font-size:13px;font-weight:700;color:var(--g);margin-bottom:3px;}
+.loc-info p{font-size:11px;color:var(--mut);line-height:1.55;}
+.loc-info a{color:var(--g);font-weight:700;font-size:12px;text-decoration:none;}
+.time-info-card{background:#fffbeb;border:1.5px solid #f59e0b;border-radius:12px;padding:12px 14px;margin-bottom:10px;font-size:12px;color:#92400e;line-height:1.65;}
+.time-info-card strong{color:#d35400;}
+.rpt-header{background:linear-gradient(135deg,var(--gd) 0%,var(--g) 60%,#1e5aaa 100%);padding:20px 16px 16px;border-radius:16px;margin-bottom:14px;position:relative;overflow:hidden;}
+.rpt-chip{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);border-radius:20px;padding:5px 12px;color:#fff;font-size:11px;font-weight:600;display:inline-flex;align-items:center;gap:4px;}
+.rpt-chip span{color:var(--gl);font-weight:700;}
+.rpt-stats{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:12px;}
+.rpt-stat{background:var(--wh);border:1px solid var(--bdr);border-radius:12px;padding:10px 6px;text-align:center;}
+.rpt-stat-ico{font-size:16px;margin-bottom:2px;}
+.rpt-stat-val{font-family:'DM Serif Display',serif;font-size:22px;color:var(--g);}
+.rpt-stat-lbl{font-size:9px;color:var(--mut);font-weight:700;letter-spacing:.05em;text-transform:uppercase;}
+.dept-bar-row2{margin-bottom:8px;}
+.dept-bar-head2{display:flex;justify-content:space-between;margin-bottom:3px;}
+.dept-bar-track2{background:var(--gm);border-radius:5px;height:8px;overflow:hidden;}
+.dept-bar-fill2{height:100%;border-radius:5px;transition:width .5s ease;}
+.rpt-tbl-head{display:grid;grid-template-columns:24px 1fr 90px 70px 60px 100px 100px;align-items:center;gap:6px;padding:8px 12px;background:var(--gd);color:rgba(255,255,255,.7);font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;border-radius:10px 10px 0 0;}
+.rpt-tbl-row{display:grid;grid-template-columns:24px 1fr 90px 70px 60px 100px 100px;align-items:center;gap:6px;padding:9px 12px;border-bottom:1px solid var(--gp);transition:background .1s;font-size:12px;}
+.rpt-tbl-row:last-child{border-bottom:none;}
+.rpt-tbl-row:hover{background:#f0f5ff;}
+.rpt-tbl-row.fail-r{background:#fff9f0;}
+.rpt-filter-btn{padding:5px 12px;border:1.5px solid var(--bdr);border-radius:20px;font-size:11px;font-weight:700;cursor:pointer;background:var(--wh);color:var(--mut);font-family:'DM Sans',sans-serif;transition:all .15s;}
+.rpt-filter-btn.on{background:var(--g);border-color:var(--g);color:#fff;}
+.rpt-sig-box{border:1.5px solid var(--bdr);border-radius:8px;width:90px;height:36px;overflow:hidden;display:flex;align-items:center;justify-content:center;cursor:pointer;position:relative;background:#fff;}
+.rpt-sig-hint{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:9px;color:var(--mut);pointer-events:none;}
+.rpt-sig-box.has-sig .rpt-sig-hint{opacity:0;}
+.rpt-sig-clr{position:absolute;top:1px;right:2px;background:rgba(231,76,60,.8);color:#fff;border:none;border-radius:3px;padding:1px 4px;font-size:8px;cursor:pointer;display:none;}
+.rpt-sig-box.has-sig .rpt-sig-clr{display:block;}
+@media(max-width:500px){.rpt-tbl-head,.rpt-tbl-row{grid-template-columns:20px 1fr 70px 50px 80px;}.col-rpt-time{display:none;}}
+@media print{.no-print{display:none!important;}body{background:#fff;}.card,.guide-step{box-shadow:none;border:1px solid #ccc;}.mgr-hdr{background:#1a4a8a!important;-webkit-print-color-adjust:exact;print-color-adjust:exact;}.rpt-header{background:#1a4a8a!important;-webkit-print-color-adjust:exact;print-color-adjust:exact;}}
+::-webkit-scrollbar{width:4px;}::-webkit-scrollbar-thumb{background:var(--bdr);border-radius:2px;}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+// ════════════════════════════════════════════════════════════
+// ⚙️ CONFIG — Энд тохиргоогоо оруулна уу
+// ════════════════════════════════════════════════════════════
+const SCRIPT_URL = "https://script.google.com/macros/s/ТАНЫ_APPS_SCRIPT_ID/exec";
+const SHEET_URL  = "https://docs.google.com/spreadsheets/d/ТАНЫ_SPREADSHEET_ID/edit";
+const APP_URL    = "https://ТАНЫ_GITHUB_PAGES_ХАЯГ/";
+const ALERT_HOUR = 9, ALERT_MIN = 15;
+const DEFAULT_PIN = "1234";
+const DEFAULT_PASS_PCT = 80;
+const DEPTS = ["1-р тасаг","2-р тасаг","3-р тасаг","4-р тасаг","5-р тасаг","Захиргаа"];
+const ORG_NAME = "БАЙГУУЛЛАГЫН НЭР";
+const ORG_LOCATION = {
+  name: "Байгууллагын хаяг",
+  address: "Монгол, Улаанбаатар",
+  mapsUrl: "https://maps.google.com/?q=Ulaanbaatar,Mongolia",
+  lat: 47.9184, lng: 106.9177
+};
+
+// ════════════ PIN SHA-256 ════════════
+async function hashPin(pin){
+  const buf=await crypto.subtle.digest("SHA-256",new TextEncoder().encode("habea_pin_salt_"+pin));
+  return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,"0")).join("");
+}
+function normName(n){return(n||"").trim().toLowerCase();}
+
+// ════════════ STORAGE ════════════
+const K={recs:"habea_recs_v5",wrks:"habea_wrks_v3",pin:"habea_pin_v2",
+  queue:"habea_queue_v1",notif:"habea_notif_v1",cfg:"habea_cfg_v1",
+  instr:"habea_instr_v1",blacklist:"habea_blacklist_v1",newworkers:"habea_newworkers_v1"};
+const lsGet=k=>{try{return JSON.parse(localStorage.getItem(k)||"null");}catch{return null;}};
+const lsSet=(k,v)=>{
+  try{localStorage.setItem(k,JSON.stringify(v));}
+  catch(e){
+    if(e.name==="QuotaExceededError"||e.code===22){
+      try{
+        const recs=JSON.parse(localStorage.getItem("habea_recs_v5")||"[]");
+        recs.forEach(r=>{if(r.signature&&r.signature!=="signed")r.signature="signed";});
+        localStorage.setItem("habea_recs_v5",JSON.stringify(recs));
+        localStorage.setItem(k,JSON.stringify(v));
+        toast("Санах ой дүүрч байсан тул хуучин гарын үсгийг цэвэрлэлээ","info");
+      }catch(e2){toast("Санах ой дүүрсэн байна! Хуучин бүртгэлийг цэвэрлэнэ үү","err");}
+    }
+  }
+};
+const getRecs  =()=>lsGet(K.recs)||[];
+const saveRecs =v=>lsSet(K.recs,v);
+const getWrks  =()=>lsGet(K.wrks)||[];
+const saveWrks =v=>lsSet(K.wrks,v);
+const getQueue =()=>lsGet(K.queue)||[];
+const saveQueue=v=>lsSet(K.queue,v);
+const getPin   =()=>localStorage.getItem(K.pin)||"";
+const savePin  =async v=>{const h=await hashPin(v);localStorage.setItem(K.pin,h);};
+const getCfg   =()=>lsGet(K.cfg)||{passPct:DEFAULT_PASS_PCT};
+const saveCfg  =v=>lsSet(K.cfg,v);
+const getInstructions=()=>lsGet(K.instr)||null;
+const saveInstructions=v=>lsSet(K.instr,v);
+const getBlacklist=()=>lsGet(K.blacklist)||[];
+const saveBlacklist=v=>lsSet(K.blacklist,v);
+
+function addToBlacklist(worker){
+  const bl=getBlacklist();const key=normName(worker.name);
+  if(!bl.find(b=>normName(b.name)===key))
+    bl.push({name:worker.name,department:worker.department||"",position:worker.position||"",deletedAt:toDay(),deletedTs:Date.now()});
+  saveBlacklist(bl);
+}
+function pruneBlacklist(){
+  const HOURS_72=72*60*60*1000;const now=Date.now();const bl=getBlacklist();
+  const remaining=bl.filter(b=>!b.deletedTs||(now-b.deletedTs)<HOURS_72);
+  if(remaining.length!==bl.length){
+    saveBlacklist(remaining);
+    const ws=getWrks();const removed=bl.filter(b=>b.deletedTs&&(now-b.deletedTs)>=HOURS_72);
+    let changed=false;
+    removed.forEach(b=>{const idx=ws.findIndex(w=>normName(w.name)===normName(b.name));if(idx>-1){ws.splice(idx,1);changed=true;}});
+    if(changed){saveWrks(ws);syncWorkers(ws);}
+  }
+}
+function removeFromBlacklist(name){saveBlacklist(getBlacklist().filter(b=>normName(b.name)!==normName(name)));}
+function isBlacklisted(name){return getBlacklist().some(b=>normName(b.name)===normName(name));}
+const getNewWorkers=()=>lsGet(K.newworkers)||[];
+const saveNewWorkers=v=>lsSet(K.newworkers,v);
+function markAsNew(name){const nw=getNewWorkers().filter(x=>normName(x.name)!==normName(name));nw.push({name:name.trim(),ts:Date.now()});saveNewWorkers(nw);}
+function isNewWorker(name){const nw=getNewWorkers().find(x=>normName(x.name)===normName(name));if(!nw)return false;return(Date.now()-nw.ts)<24*60*60*1000;}
+function pruneNewWorkers(){saveNewWorkers(getNewWorkers().filter(x=>x.ts>Date.now()-24*60*60*1000));}
+(async function initPin(){if(!localStorage.getItem(K.pin)){const h=await hashPin(DEFAULT_PIN);localStorage.setItem(K.pin,h);}})();
+
+// ════════════ DATE HELPERS — Улаанбаатарын цаг (UTC+8) ════════════
+function _pad(n){return String(n).padStart(2,"0");}
+function _getUBDate(){
+  const s=new Date().toLocaleString("sv-SE",{timeZone:"Asia/Ulaanbaatar"});
+  const[datePart,timePart]=s.split(" ");
+  const[year,month,day]=datePart.split("-");
+  const[hour,minute]=timePart.split(":");
+  return{year,month,day,hour,minute};
+}
+function toDay(){const p=_getUBDate();return`${p.year}.${p.month}.${p.day}`;}
+function toNow(){const p=_getUBDate();return`${p.hour}:${p.minute}`;}
+function mnToISO(mnDate){
+  if(!mnDate)return"";
+  const parts=mnDate.split(".");
+  if(parts.length===3){const[y,m,d]=parts;return`${y.padStart(4,"0")}-${m.padStart(2,"0")}-${d.padStart(2,"0")}`;}
+  return"";
+}
+function isoToMn(isoDate){
+  if(!isoDate)return toDay();
+  const parts=isoDate.split("-");
+  if(parts.length!==3)return toDay();
+  const[y,m,d]=parts;
+  if(!y||!m||!d)return toDay();
+  return`${y}.${_pad(parseInt(m))}.${_pad(parseInt(d))}`;
+}
+function initials(n){if(!n)return"?";return n.trim().split(/\s+/).slice(0,2).map(p=>p[0]||"").join("").toUpperCase()||"?";}
+function chk(){return'<svg width="11" height="9" viewBox="0 0 11 9" fill="none"><polyline points="1,4.5 4,7.5 10,1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';}
+function hasSignedToday(name){return getRecs().some(r=>normName(r.name)===normName(name)&&r.date===toDay());}
+function safeTime(val){
+  if(!val)return"";const s=String(val).trim();
+  if(/^\d{1,2}:\d{2}$/.test(s))return s.padStart(5,"0");
+  if(/^\d{1,2}:\d{2}:\d{2}$/.test(s))return s.substring(0,5);
+  return"";
+}
+
+// ════════════ DOM HELPERS ════════════
+function el(tag,props,kids){
+  const e=document.createElement(tag);
+  for(const k in props||{}){
+    if(k==="className")e.className=props[k];
+    else if(k==="style"&&typeof props[k]==="object")Object.assign(e.style,props[k]);
+    else if(k.startsWith("on"))e.addEventListener(k.slice(2).toLowerCase(),props[k]);
+    else if(k==="disabled"&&props[k])e.disabled=true;
+    else e.setAttribute(k,props[k]);
+  }
+  (kids||[]).flat().forEach(c=>{if(c==null||c===false)return;e.appendChild(typeof c==="string"?document.createTextNode(c):c);});
+  return e;
+}
+function h(tag,p,...c){return el(tag,p,c);}
+let _tt;
+function toast(msg,type){
+  document.querySelectorAll(".toast").forEach(t=>t.remove());clearTimeout(_tt);
+  const t=el("div",{className:"toast",style:{background:type==="err"?"#c0392b":type==="info"?"#2474a8":"#1a4a8a"}},[msg]);
+  document.body.appendChild(t);_tt=setTimeout(()=>t.remove(),3500);
+}
+
+// ════════════ NOTIFICATION ════════════
+async function reqNotif(){
+  if(!("Notification" in window))return false;
+  if(Notification.permission==="granted")return true;
+  if(Notification.permission==="denied")return false;
+  return(await Notification.requestPermission())==="granted";
+}
+function sendNotif(title,body){if(!("Notification" in window)||Notification.permission!=="granted")return;new Notification(title,{body});}
+let _alertInterval=null;
+function startAlertTimer(){
+  if(_alertInterval)return;
+  const todayKey="notif_"+toDay();
+  if(localStorage.getItem(K.notif)===todayKey)return;
+  const check=()=>{
+    const p=_getUBDate();const H=parseInt(p.hour);const M=parseInt(p.minute);
+    const ac=getCfg();const ah=ac.alertHour||ALERT_HOUR;const am=ac.alertMin||ALERT_MIN;
+    if(H===ah&&M>=am){
+      const workers=getWrks(),recs=getRecs();
+      const signed=new Set(recs.filter(r=>r.date===toDay()).map(r=>normName(r.name)));
+      const unsigned=workers.filter(w=>!signed.has(normName(w.name)));
+      if(unsigned.length>0){
+        sendNotif("⚠️ ХАБЭА — Бүртгэлгүй ажилтан байна",`${unsigned.length} ажилтан гарын үсэг зураагүй`);
+        localStorage.setItem(K.notif,todayKey);clearInterval(_alertInterval);_alertInterval=null;
+      }
+    }
+  };
+  _alertInterval=setInterval(check,60000);check();
+}
+
+// ════════════ SHEETS API ════════════
+async function postToSheets(payload){
+  try{const res=await fetch(SCRIPT_URL,{method:"POST",headers:{"Content-Type":"text/plain"},body:JSON.stringify(payload)});return await res.json();}
+  catch(e){return{ok:false,error:e.message};}
+}
+async function getFromSheets(params){
+  try{const qs=Object.entries(params).map(([k,v])=>`${k}=${encodeURIComponent(v)}`).join("&");const res=await fetch(`${SCRIPT_URL}?${qs}`);return await res.json();}
+  catch(e){return{ok:false,error:e.message};}
+}
+async function sendSheets(rec){
+  const q=getQueue();
+  const safeRec={...rec,passed:rec.passed?"Тэнцсэн":"Дутуу",instrRead:rec.instrRead?"Тийм":"Үгүй",
+    time:rec.time&&/^\d{1,2}:\d{2}$/.test(String(rec.time).trim())?rec.time:toNow()};
+  q.push({payload:{action:"addRecord",...safeRec},ts:Date.now(),attempts:0});
+  saveQueue(q);await flushQueue();
+}
+async function flushQueue(){
+  const q=getQueue();if(!q.length)return;const rem=[];
+  for(const item of q){if(item.attempts>=5)continue;const result=await postToSheets(item.payload);if(!result.ok){item.attempts++;rem.push(item);}}
+  saveQueue(rem);
+}
+async function syncWorkers(workers){await postToSheets({action:"syncWorkers",workers});}
+async function fetchTodayFromSheets(date){const res=await getFromSheets({action:"getToday",date:date||toDay()});if(!res||!res.ok||!Array.isArray(res.records))return[];return res.records;}
+async function fetchWorkersFromSheets(){const res=await getFromSheets({action:"getWorkers"});if(!res||!res.ok||!Array.isArray(res.workers))return null;return res.workers;}
+
+function mergeRecords(local,remote){
+  const localMap={};local.forEach(r=>{localMap[normName(r.name)+"_"+r.date]=r;});
+  const remoteMap={};remote.forEach(r=>{const key=normName(r.name)+"_"+r.date;remoteMap[key]={...r,time:safeTime(r.time)};});
+  function isValidTime(t){if(!t)return false;const s=String(t).trim();if(!/^\d{1,2}:\d{2}$/.test(s))return false;const h=parseInt(s.split(":")[0]);return h>=6&&h<=23;}
+  const merged=[];const seen=new Set();
+  Object.entries(remoteMap).forEach(([key,r])=>{
+    seen.add(key);const loc=localMap[key];
+    if(loc){let bestTime=r.time;const rOk=isValidTime(r.time),lOk=isValidTime(loc.time);if(!rOk&&lOk)bestTime=loc.time;else if(rOk)bestTime=r.time;else bestTime=loc.time||r.time;merged.push({...r,time:bestTime,signature:loc.signature||r.signature||"signed"});}
+    else merged.push(r);
+  });
+  Object.entries(localMap).forEach(([key,r])=>{if(!seen.has(key)){seen.add(key);merged.push(r);}});
+  return merged;
+}
+function autoSaveWorker(w){
+  if(!w.name)return;if(isBlacklisted(w.name))return;
+  const ws=getWrks();const idx=ws.findIndex(x=>normName(x.name)===normName(w.name));
+  if(idx===-1){saveWrks([...ws,w]);markAsNew(w.name);syncWorkers([...ws,w]);}
+  else{const updated={...ws[idx]};if(w.phone&&w.phone.trim())updated.phone=w.phone.trim();if(w.position&&w.position.trim())updated.position=w.position.trim();if(w.department&&w.department.trim())updated.department=w.department.trim();ws[idx]=updated;saveWrks(ws);}
+}
+function pruneOldSignatures(){
+  try{const recs=getRecs();const cutoff=Date.now()-30*24*60*60*1000;let changed=false;
+  recs.forEach(r=>{
+    if(r.signature&&r.signature!=="signed"){const iso=mnToISO(r.date);if(iso){const d=new Date(iso);if(d.getTime()<cutoff){r.signature="signed";changed=true;}}}
+    if(r.time){const t=String(r.time).trim();if(/^\d{1,2}:\d{2}:\d{2}$/.test(t)){r.time=t.substring(0,5);changed=true;}}
+  });if(changed)saveRecs(recs);}catch(e){}
+}
+
+const INSTRUCTIONS=[
+  "Өглөө бүрийн аюулгүй ажиллагааны санамжийг анхааралтай сонсож өдөр тутмын ажилдаа хэвшил болгох.",
+  "Машин тоног төхөөрөмжийн бүрэн бүтэн байдлыг шалгаж өөрийн хариуцсан ажлын аюулгүй ажиллагааны заавартай танилцсаны дараа ажлаа эхлүүлнэ.",
+  "Ажлын байранд согтууруулах ундаа болон мансууруулах бодис, тамхи татахыг хориглоно.",
+  "Ажлын ширээ, сандал, хувцасны шүүгээний бүрэн бүтэн байдал, цахилгаан хэрэгслүүдийн хэвийн ажиллагаа, галын аюулгүй байдал зэргийг шалгана.",
+  "Ажил үүргээ гүйцэтгэж байхдаа халтирч унах, хаалганд гар хөлөө хавчуулах, толгойгоо цохих, хурц ирмэгтэй зүйлд гараа зүсэх хатгахаас сэргийлж ажиллах.",
+  "Цахилгааны залгуурт хэт их ачаалал өгөхгүй байж хэрэглээгүй цахилгаан хэрэгслийг байнга салгаж хэвших.",
+  "Онцгой байдал үүссэн нөхцөлд өөрийн болон бусдын амь нас, эрүүл мэнд, эд хөрөнгийг хамгаалах арга хэмжээнд идэвхтэй оролцоно.",
+  "Ажлын байран дахь санамж дохио тэмдэгтүүдийг анхаарч ажиллаж хэвших.",
+  "Ажлын байранд ил гал гаргахыг хориглоно."
+];
+const CHECKLIST=[
+  {cat:"🏭 Ажлын байрны 5S",items:["Сайн ангилан ялгах","Сайн зохион байгуулах","Сайн цэвэрлэх","Сайн хэвшүүлэх","Сайн хэрэгжүүлэх"]},
+  {cat:"🏭 Аюулгүй байдал",items:["Өдөр тутмын зааварчилгаа авсан","Мэдрэл сэтгэхүйн ачаалалгүй","Согтууруулах ундаа хэрэглээгүй","Галын аюулгүй байдлыг хангасан"]},
+  {cat:"⚙️ Тоног төхөөрөмж",items:["Тоног төхөөрөмж шалгасан","Цахилгаан утас гэмтэлгүй","Орчны аюулгүй байдлыг шалгасан","Цаг ашиглалт хөтлөсөн"]}
+];
+
+// ════════════════════════════════════════════════════════════
+// 📋 ДЭЛГЭРЭНГҮЙ ТАЙЛАН
+// ════════════════════════════════════════════════════════════
+function buildDetailReport(body,selDate,dateRecs){
+  const DEPT_COLORS={"1-р тасаг":"#1a4a8a","2-р тасаг":"#2563eb","3-р тасаг":"#7c3aed","4-р тасаг":"#0891b2","5-р тасаг":"#059669","Захиргаа":"#1a4a8a"};
+  const SIGS_KEY="habea_rpt_sigs_"+selDate.replace(/\./g,"");
+  const MGR_KEY="habea_mgr_sig_v1";
+  let sigs={};let mgrSig=null,mgrName="";
+  try{sigs=JSON.parse(localStorage.getItem(SIGS_KEY)||"{}");}catch(e){}
+  try{const ms=JSON.parse(localStorage.getItem(MGR_KEY)||"null");if(ms){mgrSig=ms.sig;mgrName=ms.name||"";}}catch(e){}
+  function saveSigs(){try{localStorage.setItem(SIGS_KEY,JSON.stringify(sigs));}catch(e){}}
+  dateRecs.forEach(r=>{if(!sigs[r.name]&&r.signature&&r.signature!=="signed")sigs[r.name]=r.signature;else if(!sigs[r.name]&&r.signature==="signed")sigs[r.name]="signed";});
+  const total=dateRecs.length;const passed=dateRecs.filter(r=>r.passed).length;const pct=total?Math.round(passed/total*100):0;const signed=Object.keys(sigs).length;
+  const hdr=el("div",{className:"rpt-header fadeUp"});
+  const hdrInner=h("div",{style:{position:"relative",zIndex:1}});
+  hdrInner.appendChild(h("div",{style:{fontFamily:"'DM Serif Display',serif",fontSize:"24px",color:"#fff",marginBottom:"4px"}},[ORG_NAME]));
+  hdrInner.appendChild(h("div",{style:{color:"rgba(255,255,255,.5)",fontSize:"10px",letterSpacing:".18em",textTransform:"uppercase",marginBottom:"12px"}},["ХАБЭА · Өдрийн тайлан"]));
+  const chips=h("div",{style:{display:"flex",gap:"6px",flexWrap:"wrap"}});
+  [["📅",selDate],["👥","Нийт: "+total],["✅","Тэнцсэн: "+passed],["📊",pct+"%"]].forEach(([ico,txt])=>{chips.appendChild(h("div",{className:"rpt-chip"},[ico+" ",h("span",{},[txt])]));});
+  hdrInner.appendChild(chips);hdr.appendChild(hdrInner);body.appendChild(hdr);
+  if(!total){body.appendChild(h("div",{className:"card fadeUp",style:{textAlign:"center",color:"var(--mut)",padding:"24px"}},["Тус өдрийн бүртгэл байхгүй"]));return;}
+  const statGrid=el("div",{className:"rpt-stats fadeUp"});
+  [{ico:"👥",val:total,lbl:"Нийт"},{ico:"✅",val:passed,lbl:"Тэнцсэн",c:"var(--g)"},{ico:"⚠️",val:total-passed,lbl:"Дутуу",c:"#d35400"},{ico:"✍️",val:signed,lbl:"Гарын үсэг",c:"var(--g)"},{ico:"📊",val:pct+"%",lbl:"Гүйцэтгэл"}].forEach(s=>{
+    const b=el("div",{className:"rpt-stat"});b.appendChild(h("div",{className:"rpt-stat-ico"},[s.ico]));b.appendChild(h("div",{className:"rpt-stat-val",style:{color:s.c||"var(--g)"}},[String(s.val)]));b.appendChild(h("div",{className:"rpt-stat-lbl"},[s.lbl]));statGrid.appendChild(b);
+  });body.appendChild(statGrid);
+  const deptCard=el("div",{className:"card fadeUp no-print"});deptCard.appendChild(h("div",{className:"card-head"},["🏭 Тасгийн байдал"]));
+  const depts={};dateRecs.forEach(r=>{const d=r.department||"Бусад";if(!depts[d])depts[d]={t:0,p:0};depts[d].t++;if(r.passed)depts[d].p++;});
+  Object.entries(depts).forEach(([dept,s])=>{
+    const pct2=Math.round(s.p/s.t*100);const c=DEPT_COLORS[dept]||"#1a4a8a";
+    const row=el("div",{className:"dept-bar-row2"});
+    const head=h("div",{className:"dept-bar-head2"},[h("span",{style:{fontSize:"12px",fontWeight:"700"}},[dept]),h("span",{style:{fontSize:"11px",color:"var(--mut)"}},[s.p+"/"+s.t+" ("+pct2+"%)"]) ]);
+    const track=el("div",{className:"dept-bar-track2"});
+    const fill=el("div",{className:"dept-bar-fill2",style:{width:pct2+"%",background:pct2>=80?"linear-gradient(90deg,"+c+",var(--gl))":"linear-gradient(90deg,#e67e22,#f39c12)"}});
+    track.appendChild(fill);row.appendChild(head);row.appendChild(track);deptCard.appendChild(row);
+  });body.appendChild(deptCard);
+  const actBar=el("div",{style:{display:"flex",gap:"6px",flexWrap:"wrap",marginBottom:"12px"}});
+  const printBtn=el("button",{className:"btn btn-p btn-sm no-print"},["🖨️ Хэвлэх"]);printBtn.onclick=()=>window.print();
+  const csvBtn=el("button",{className:"btn btn-o btn-sm no-print"},["📥 CSV"]);
+  csvBtn.onclick=()=>{
+    const rows=[["Огноо","Цаг (УБ)","Нэр","Тасаг","Тушаал","Утас","Шалгалт","Гарын үсэг"]];
+    dateRecs.forEach(r=>rows.push([r.date,safeTime(r.time),r.name,r.department,r.position||"",r.phone||"",r.passed?"Тэнцсэн":"Дутуу",sigs[r.name]?"Зурсан":""]));
+    const csv="\uFEFF"+rows.map(r=>r.map(c=>'"'+String(c||"").replace(/"/g,'""')+'"').join(",")).join("\n");
+    const blob=new Blob([csv],{type:"text/csv;charset=utf-8;"});const url=URL.createObjectURL(blob);const a=document.createElement("a");a.href=url;a.download="ХАБЭА_"+selDate+".csv";a.click();URL.revokeObjectURL(url);
+  };
+  const mgrBtn=el("button",{className:"btn btn-o btn-sm no-print"},["✍️ Менежерийн г/ү"]);
+  mgrBtn.onclick=()=>showMgrSigModal(MGR_KEY,(sig,name)=>{mgrSig=sig;mgrName=name;});
+  actBar.appendChild(printBtn);actBar.appendChild(csvBtn);actBar.appendChild(mgrBtn);body.appendChild(actBar);
+  const tblCard=el("div",{className:"card fadeUp",style:{padding:"0",overflow:"hidden"}});
+  const filterRow=el("div",{style:{display:"flex",gap:"5px",flexWrap:"wrap",padding:"12px 12px 8px"}});
+  let curFilt="all";const allDepts=["all",...Object.keys(depts)];const filterBtns={};
+  allDepts.forEach(d=>{const fb=el("button",{className:"rpt-filter-btn"+(d==="all"?" on":"")},[ d==="all"?"Бүгд ("+total+")":d+" ("+depts[d].t+")" ]);fb.onclick=()=>{curFilt=d;Object.values(filterBtns).forEach(b=>b.classList.remove("on"));fb.classList.add("on");renderRows();};filterBtns[d]=fb;filterRow.appendChild(fb);});
+  tblCard.appendChild(filterRow);
+  tblCard.appendChild(h("div",{style:{display:"flex",gap:"12px",padding:"0 12px 8px",fontSize:"10px",color:"var(--mut)",flexWrap:"wrap"}},[
+    h("span",{},[h("span",{style:{width:"8px",height:"8px",borderRadius:"50%",background:"var(--gl)",display:"inline-block",marginRight:"3px"}},[]),"Тэнцсэн"]),
+    h("span",{},[h("span",{style:{width:"8px",height:"8px",borderRadius:"50%",background:"#f39c12",display:"inline-block",marginRight:"3px"}},[]),"Дутуу"]),
+    h("span",{style:{color:"var(--g)",fontWeight:"700"}},["💡 Нүд дарж гарын үсэг зурна уу"])
+  ]));
+  const _mgrData=lsGet(MGR_KEY)||null;const _mgrSig=_mgrData?_mgrData.sig:null;const _mgrName=_mgrData?(_mgrData.name||"Менежер"):"";
+  tblCard.appendChild(h("div",{className:"rpt-tbl-head"},[
+    h("div",{},[" # "]),h("div",{},[" Ажилтан "]),h("div",{},[" Тасаг "]),
+    h("div",{className:"col-rpt-time"},[" Цаг (УБ) "]),h("div",{},[" Шалгалт "]),
+    h("div",{style:{textAlign:"center"}},[" Ажилтны г/ү "]),
+    h("div",{style:{textAlign:"center"}},[" Менежерийн г/ү "])
+  ]));
+  const tbody=el("div",{id:"rpt-tbody"});tblCard.appendChild(tbody);body.appendChild(tblCard);
+  function renderRows(){
+    tbody.innerHTML="";const filtered=curFilt==="all"?dateRecs:dateRecs.filter(r=>r.department===curFilt);
+    filtered.forEach((r,idx)=>{
+      const hasSig=!!sigs[r.name];
+      const row=el("div",{className:"rpt-tbl-row"+(r.passed?"":" fail-r")});
+      row.appendChild(h("div",{style:{fontSize:"10px",color:"var(--mut)",fontWeight:"700",textAlign:"center"}},[String(idx+1)]));
+      const avC=r.passed?"linear-gradient(135deg,var(--g),var(--gd))":"linear-gradient(135deg,#e67e22,#d35400)";
+      row.appendChild(h("div",{style:{display:"flex",alignItems:"center",gap:"6px"}},[
+        h("div",{style:{width:"26px",height:"26px",borderRadius:"50%",flexShrink:"0",background:avC,color:"#fff",fontSize:"9px",fontWeight:"700",display:"flex",alignItems:"center",justifyContent:"center"}},[initials(r.name)]),
+        h("div",{},[h("div",{style:{fontWeight:"700",fontSize:"12px"}},[r.name]),h("div",{style:{fontSize:"10px",color:"var(--mut)"}},[r.phone?"📞"+r.phone:""])])
+      ]));
+      row.appendChild(h("div",{style:{fontSize:"11px"}},[r.department]));
+      row.appendChild(h("div",{className:"col-rpt-time",style:{fontFamily:"monospace",fontSize:"12px",color:"var(--mut)"}},[safeTime(r.time)]));
+      row.appendChild(h("div",{},[el("div",{className:"badge "+(r.passed?"bg-g":"bg-o")},[r.passed?"✓ Тэнцсэн":"⚠ Дутуу"])]));
+      const sigBox=el("div",{className:"rpt-sig-box"+(hasSig?" has-sig":"")});
+      const canvas=el("canvas",{style:{width:"90px",height:"36px",background:"#fff"}});canvas.width=180;canvas.height=72;
+      const hint=h("div",{className:"rpt-sig-hint"},["✍️ Зурах"]);
+      const clrBtn=el("button",{className:"rpt-sig-clr"},["✕"]);
+      clrBtn.onclick=(e)=>{e.stopPropagation();delete sigs[r.name];saveSigs();canvas.getContext("2d").clearRect(0,0,canvas.width,canvas.height);sigBox.classList.remove("has-sig");hint.style.opacity="1";startRptSig(sigBox,canvas,hint,r.name);updateSignedCnt();};
+      sigBox.appendChild(canvas);sigBox.appendChild(hint);sigBox.appendChild(clrBtn);
+      if(hasSig&&sigs[r.name]&&sigs[r.name]!=="signed"){const ctx2=canvas.getContext("2d");ctx2.fillStyle="#fff";ctx2.fillRect(0,0,canvas.width,canvas.height);const img=new Image();img.onload=()=>ctx2.drawImage(img,0,0,canvas.width,canvas.height);img.src=sigs[r.name];sigBox.classList.add("has-sig");}
+      else if(hasSig&&sigs[r.name]==="signed"){const ctx2=canvas.getContext("2d");ctx2.fillStyle="#fff";ctx2.fillRect(0,0,canvas.width,canvas.height);ctx2.fillStyle="#1a4a8a";ctx2.font="bold 9px sans-serif";ctx2.textAlign="center";ctx2.fillText("✓ Зурсан",canvas.width/2,canvas.height/2+3);}
+      sigBox.onclick=()=>{if(!sigs[r.name])startRptSig(sigBox,canvas,hint,r.name);};row.appendChild(sigBox);
+      const mgrCell=el("div",{style:{display:"flex",alignItems:"center",justifyContent:"center"}});
+      if(_mgrSig){const mb=el("div",{style:{width:"90px",height:"36px",borderRadius:"8px",border:"1.5px solid var(--bdr)",overflow:"hidden",background:"#fff",display:"flex",alignItems:"center",justifyContent:"center"}});mb.appendChild(el("img",{src:_mgrSig,style:{maxWidth:"88px",maxHeight:"34px",objectFit:"contain"},title:_mgrName}));mgrCell.appendChild(mb);}
+      else{const nb=el("div",{style:{width:"90px",height:"36px",borderRadius:"8px",border:"1.5px dashed #aaa",background:"#fff",display:"flex",alignItems:"center",justifyContent:"center",fontSize:"9px",color:"var(--mut)",textAlign:"center",padding:"2px"}});nb.textContent="⚙️ Тохиргоо";mgrCell.appendChild(nb);}
+      row.appendChild(mgrCell);tbody.appendChild(row);
+    });updateSignedCnt();
+  }
+  function updateSignedCnt(){const cnt=Object.keys(sigs).length;const vals=document.querySelectorAll(".rpt-stat-val");if(vals[3])vals[3].textContent=String(cnt);}
+  function startRptSig(box,canvas,hint,name){
+    const ctx=canvas.getContext("2d");ctx.fillStyle="#fff";ctx.fillRect(0,0,canvas.width,canvas.height);ctx.strokeStyle="#1a2040";ctx.lineWidth=3;ctx.lineCap="round";ctx.lineJoin="round";
+    let drawing=false,drawn=false;
+    function pos(e){const r=canvas.getBoundingClientRect();const t=e.touches?e.touches[0]:e;return[(t.clientX-r.left)*(canvas.width/r.width),(t.clientY-r.top)*(canvas.height/r.height)];}
+    function start(e){e.preventDefault();drawing=true;const[x,y]=pos(e);ctx.beginPath();ctx.moveTo(x,y);}
+    function move(e){e.preventDefault();if(!drawing)return;drawn=true;hint.style.opacity="0";const[x,y]=pos(e);ctx.lineTo(x,y);ctx.stroke();}
+    function end(){drawing=false;if(drawn){const tc=document.createElement("canvas");tc.width=canvas.width;tc.height=canvas.height;const tx=tc.getContext("2d");tx.fillStyle="#fff";tx.fillRect(0,0,tc.width,tc.height);tx.drawImage(canvas,0,0);sigs[name]=tc.toDataURL("image/jpeg",0.8);saveSigs();box.classList.add("has-sig");updateSignedCnt();canvas.removeEventListener("mousedown",start);canvas.removeEventListener("mousemove",move);canvas.removeEventListener("touchstart",start);canvas.removeEventListener("touchmove",move);}};
+    canvas.addEventListener("mousedown",start);canvas.addEventListener("mousemove",move);canvas.addEventListener("mouseup",end);canvas.addEventListener("mouseleave",end);canvas.addEventListener("touchstart",start,{passive:false});canvas.addEventListener("touchmove",move,{passive:false});canvas.addEventListener("touchend",end);
+  }
+  renderRows();
+  body.appendChild(h("div",{style:{textAlign:"center",fontSize:"11px",color:"var(--mut)",marginTop:"8px",paddingBottom:"8px"}},[ORG_NAME+" · ХАБЭА · "+selDate]));
+}
+
+function showMgrSigModal(key,onSave){
+  const ov=el("div",{className:"modal-overlay"});const mc=el("div",{className:"modal-card"});
+  mc.appendChild(h("div",{className:"modal-title"},["✍️ Менежерийн гарын үсэг"]));
+  mc.appendChild(h("div",{style:{fontSize:"12px",color:"var(--mut)",marginBottom:"12px"}},["Гарын үсгээ зурна уу — бүх мөрөнд харагдана"]));
+  const ni=el("input",{className:"inp",type:"text",placeholder:"Менежерийн нэр",style:{marginBottom:"10px"}});mc.appendChild(ni);
+  const outer=el("div",{style:{border:"2px dashed var(--bdr)",borderRadius:"12px",background:"#fff",position:"relative",overflow:"hidden",cursor:"crosshair",height:"130px",marginBottom:"12px"}});
+  const cv=el("canvas",{style:{background:"#fff"}});outer.appendChild(cv);
+  const hint2=h("div",{style:{position:"absolute",inset:"0",display:"flex",alignItems:"center",justifyContent:"center",color:"var(--mut)",fontSize:"13px",pointerEvents:"none"}},["✍️ Энд гарын үсгээ зурна уу"]);outer.appendChild(hint2);
+  const clrb=el("button",{style:{position:"absolute",top:"6px",right:"6px",background:"rgba(231,76,60,.85)",color:"#fff",border:"none",borderRadius:"6px",padding:"3px 8px",fontSize:"11px",cursor:"pointer",fontFamily:"inherit"}},["Арилгах"]);outer.appendChild(clrb);mc.appendChild(outer);
+  let mctx,mdrawn=false,mdrg=false;
+  setTimeout(()=>{
+    cv.width=outer.offsetWidth||300;cv.height=130;mctx=cv.getContext("2d");mctx.strokeStyle="#1a2040";mctx.lineWidth=2.2;mctx.lineCap="round";mctx.lineJoin="round";
+    cv.onmousedown=e=>{mdrg=true;const r=cv.getBoundingClientRect();mctx.beginPath();mctx.moveTo(e.clientX-r.left,e.clientY-r.top);};
+    cv.onmousemove=e=>{if(!mdrg)return;mdrawn=true;hint2.style.opacity="0";const r=cv.getBoundingClientRect();mctx.lineTo(e.clientX-r.left,e.clientY-r.top);mctx.stroke();};
+    cv.onmouseup=cv.onmouseleave=()=>{mdrg=false;};
+    cv.addEventListener("touchstart",e=>{e.preventDefault();mdrg=true;const r=cv.getBoundingClientRect();const t=e.touches[0];mctx.beginPath();mctx.moveTo(t.clientX-r.left,t.clientY-r.top);},{passive:false});
+    cv.addEventListener("touchmove",e=>{e.preventDefault();if(!mdrg)return;mdrawn=true;hint2.style.opacity="0";const r=cv.getBoundingClientRect();const t=e.touches[0];mctx.lineTo(t.clientX-r.left,t.clientY-r.top);mctx.stroke();},{passive:false});
+    cv.addEventListener("touchend",()=>{mdrg=false;});
+  },50);
+  clrb.onclick=()=>{if(mctx){mctx.clearRect(0,0,cv.width,cv.height);hint2.style.opacity="1";mdrawn=false;}};
+  const btns=h("div",{style:{display:"flex",gap:"8px"}});
+  const ok=el("button",{className:"btn btn-p",style:{flex:"1"}},["💾 Хадгалах"]);
+  ok.onclick=()=>{if(!mdrawn){toast("Гарын үсгээ зурна уу","err");return;}const tc=document.createElement("canvas");tc.width=cv.width;tc.height=cv.height;const tx=tc.getContext("2d");tx.fillStyle="#fff";tx.fillRect(0,0,tc.width,tc.height);tx.drawImage(cv,0,0);const sig=tc.toDataURL("image/jpeg",0.9);const name=ni.value.trim();try{localStorage.setItem(key,JSON.stringify({sig,name}));}catch(e){}onSave(sig,name);ov.remove();toast("Менежерийн гарын үсэг хадгалагдлаа ✓");};
+  const cc=el("button",{className:"btn btn-o",style:{flex:"1"}},["Цуцлах"]);cc.onclick=()=>ov.remove();
+  btns.appendChild(cc);btns.appendChild(ok);mc.appendChild(btns);ov.appendChild(mc);ov.onclick=e=>{if(e.target===ov)ov.remove();};document.body.appendChild(ov);
+}
+
+// ════════════════════════════════════════════════════════════
+// 🏠 НҮҮР
+// ════════════════════════════════════════════════════════════
+function renderHome(){
+  const app=document.getElementById("app");app.innerHTML="";
+  const page=h("div",{className:"page home-bg center-page"});
+  const inner=h("div",{className:"home-inner fadeUp"});
+  inner.appendChild(h("div",{style:{fontFamily:"'DM Serif Display',serif",fontSize:"48px",color:"#fff",lineHeight:"1"}},[ORG_NAME]));
+  inner.appendChild(h("div",{style:{textAlign:"center",color:"rgba(255,255,255,.5)",fontSize:"11px",letterSpacing:".14em",textTransform:"uppercase",marginTop:"6px"}},["ХАБЭА · Цахим бүртгэлийн систем"]));
+  inner.appendChild(h("div",{className:"home-div"}));
+  const bw=h("div",{style:{display:"flex",flexDirection:"column",gap:"10px",width:"100%"}});
+  const bs=el("button",{className:"btn btn-p",style:{fontSize:"16px",padding:"16px"}},["✍️  Гарын үсэг зурах"]);
+  bs.onclick=()=>renderWorkerForm(rec=>renderSuccess(rec,renderHome),renderHome);
+  const shareBtn=el("button",{style:{padding:"12px",background:"rgba(255,255,255,.08)",color:"rgba(255,255,255,.7)",border:"1px solid rgba(255,255,255,.2)",borderRadius:"12px",fontSize:"13px",fontWeight:"700",fontFamily:"'DM Sans',sans-serif",cursor:"pointer",width:"100%",display:"flex",alignItems:"center",justifyContent:"center",gap:"8px"}},["📲  Апп хуваалцах"]);
+  shareBtn.onclick=()=>renderShare();
+  const bm=el("button",{className:"btn-ghost"},["🛡️  Менежерийн хяналт"]);
+  bm.onclick=()=>renderPin(()=>renderManager(renderHome),renderHome);
+  bw.appendChild(bs);bw.appendChild(shareBtn);bw.appendChild(bm);inner.appendChild(bw);
+  inner.appendChild(h("div",{style:{color:"rgba(255,255,255,.15)",fontSize:"10px",marginTop:"32px"}},["ХАБЭА Цахим бүртгэл · Улаанбаатар цагаар ажилладаг"]));
+  page.appendChild(inner);app.appendChild(page);
+  reqNotif().then(()=>startAlertTimer());
+  setTimeout(flushQueue,2000);setTimeout(pruneOldSignatures,1000);setTimeout(pruneNewWorkers,1500);setTimeout(pruneBlacklist,2000);
+  fetchWorkersFromSheets().then(ws=>{
+    if(!ws||!ws.length)return;const local=getWrks();const bl=new Set(getBlacklist().map(b=>normName(b.name)));const localMap={};local.forEach(w=>{localMap[normName(w.name)]=w;});let changed=false;
+    ws.forEach(w=>{const key=normName(w.name);if(bl.has(key))return;if(!localMap[key]){local.push(w);localMap[key]=w;changed=true;}else{const lw=localMap[key];if(w.department&&lw.department!==w.department){lw.department=w.department;changed=true;}if(w.position&&lw.position!==w.position){lw.position=w.position;changed=true;}if(w.phone&&lw.phone!==w.phone){lw.phone=w.phone;changed=true;}}});
+    if(changed)saveWrks(local);
+  }).catch(()=>{});
+}
+
+// ════════════════════════════════════════════════════════════
+// 🔐 PIN
+// ════════════════════════════════════════════════════════════
+function renderPin(onOk,onBack){
+  const app=document.getElementById("app");app.innerHTML="";let code="";
+  const dots=Array.from({length:4},()=>el("div",{className:"pin-dot"}));
+  function upd(){
+    dots.forEach((d,i)=>{d.className="pin-dot"+(i<code.length?" on":"");});
+    if(code.length===4){setTimeout(async()=>{
+      const lk="habea_pin_lock";const ld=JSON.parse(localStorage.getItem(lk)||'{"attempts":0,"until":0}');
+      if(Date.now()<ld.until){const rem=Math.ceil((ld.until-Date.now())/1000);toast(`${rem}с хүлээнэ үү!`,"err");code="";upd();return;}
+      const hh=await hashPin(code);
+      if(hh===getPin()){localStorage.setItem(lk,JSON.stringify({attempts:0,until:0}));onOk();}
+      else{ld.attempts=(ld.attempts||0)+1;if(ld.attempts>=5){ld.until=Date.now()+60000;ld.attempts=0;toast("5 удаа буруу оруулсан — 1 минут хаагдлаа","err");}else{toast(`Буруу PIN! (${ld.attempts}/5)`,"err");}localStorage.setItem(lk,JSON.stringify(ld));code="";upd();}
+    },120);}
+  }
+  function press(v){if(v==="del")code=code.slice(0,-1);else if(code.length<4)code+=v;upd();}
+  const pad=el("div",{className:"pin-pad"});
+  [1,2,3,4,5,6,7,8,9].forEach(n=>{const b=el("button",{className:"pin-btn"},[String(n)]);b.onclick=()=>press(String(n));pad.appendChild(b);});
+  const be=el("button",{className:"pin-btn",style:{visibility:"hidden"}});
+  const b0=el("button",{className:"pin-btn pin-0"},["0"]);b0.onclick=()=>press("0");
+  const bd=el("button",{className:"pin-btn pin-del"},["⌫"]);bd.onclick=()=>press("del");
+  pad.appendChild(be);pad.appendChild(b0);pad.appendChild(bd);
+  const card=el("div",{className:"glass pin-card scaleIn"});
+  card.appendChild(h("div",{style:{fontFamily:"'DM Serif Display',serif",fontSize:"20px",color:"var(--g)",marginBottom:"4px"}},["ХАБЭА"]));
+  card.appendChild(h("div",{style:{color:"var(--mut)",fontSize:"13px",marginTop:"4px",marginBottom:"4px"}},["Менежерийн PIN код"]));
+  card.appendChild(el("div",{className:"pin-dots"},dots));card.appendChild(pad);
+  const bb=el("button",{className:"btn btn-o",style:{marginTop:"16px"}},["← Буцах"]);bb.onclick=onBack;card.appendChild(bb);
+  const pg=h("div",{className:"center-page",style:{background:"linear-gradient(160deg,var(--gd),var(--g) 70%)"}});
+  pg.appendChild(card);app.appendChild(pg);
+}
+
+// ════════════════════════════════════════════════════════════
+// 📲 SHARE
+// ════════════════════════════════════════════════════════════
+function renderShare(){
+  const app=document.getElementById("app");app.innerHTML="";
+  const page=el("div",{style:{minHeight:"100vh",background:"linear-gradient(160deg,var(--gd) 0%,var(--g) 55%,#1e5aaa 100%)",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:"24px",position:"relative",overflow:"hidden"}});
+  page.appendChild(h("div",{className:"fadeUp",style:{textAlign:"center",marginBottom:"28px"}},[
+    h("div",{style:{fontFamily:"'DM Serif Display',serif",fontSize:"36px",color:"#fff"}},[ORG_NAME]),
+    h("div",{style:{color:"rgba(255,255,255,.5)",fontSize:"11px",letterSpacing:".2em",textTransform:"uppercase",marginTop:"6px"}},["ХАБЭА · Цахим бүртгэл"])
+  ]));
+  const qrCard=el("div",{style:{background:"#fff",borderRadius:"28px",padding:"28px 28px 20px",textAlign:"center",boxShadow:"0 20px 60px rgba(0,0,0,.25)",maxWidth:"300px",width:"100%",marginBottom:"20px"}});
+  qrCard.appendChild(el("img",{src:`https://api.qrserver.com/v1/create-qr-code/?size=200x200&color=0d2a5a&bgcolor=ffffff&data=${encodeURIComponent(APP_URL)}&qzone=2`,style:{width:"200px",height:"200px",display:"block",borderRadius:"12px",margin:"0 auto 16px"}}));
+  qrCard.appendChild(h("div",{style:{fontSize:"12px",color:"var(--mut)",fontWeight:"600",letterSpacing:".05em",marginBottom:"12px"}},["📱 Камераар уншуулна уу"]));
+  const urlBox=el("div",{style:{background:"var(--gp)",borderRadius:"10px",padding:"8px 12px",fontSize:"11px",color:"var(--g)",fontWeight:"700",cursor:"pointer",wordBreak:"break-all",border:"1px solid var(--bdr)"}});
+  urlBox.textContent="🔗 "+APP_URL;
+  urlBox.onclick=()=>navigator.clipboard.writeText(APP_URL).then(()=>toast("Холбоос хуулагдлаа ✓")).catch(()=>toast("Гараар хуулна уу","info"));
+  qrCard.appendChild(urlBox);page.appendChild(qrCard);
+  const btnWrap=el("div",{className:"fadeUp",style:{width:"100%",maxWidth:"300px",display:"flex",flexDirection:"column",gap:"10px"}});
+  if(navigator.share){const sb=el("button",{style:{width:"100%",padding:"14px",background:"rgba(255,255,255,.15)",color:"#fff",border:"1px solid rgba(255,255,255,.3)",borderRadius:"14px",fontSize:"14px",fontWeight:"700",fontFamily:"'DM Sans',sans-serif",cursor:"pointer"}},["📤  Мессенжерээр илгээх"]);sb.onclick=()=>navigator.share({title:"ХАБЭА",text:"ХАБЭА бүртгэлийн систем",url:APP_URL}).catch(()=>{});btnWrap.appendChild(sb);}
+  const backBtn=el("button",{style:{width:"100%",padding:"13px",background:"transparent",color:"rgba(255,255,255,.6)",border:"1px solid rgba(255,255,255,.15)",borderRadius:"14px",fontSize:"14px",fontWeight:"600",fontFamily:"'DM Sans',sans-serif",cursor:"pointer"}},["← Буцах"]);
+  backBtn.onclick=renderHome;btnWrap.appendChild(backBtn);page.appendChild(btnWrap);app.appendChild(page);
+}
+
+// ════════════════════════════════════════════════════════════
+// ✍️ АЖИЛТНЫ ФОРМ
+// ════════════════════════════════════════════════════════════
+function renderWorkerForm(onDone,onBack){
+  const app=document.getElementById("app");let step=0;
+  const state={name:"",phone:"",position:"",department:"",nameMode:"list",instrRead:false,checked:new Set()};
+  let sigCtx,sigCanvas,drawing=false,hasDrawn=false;
+  const PASS_PCT=(getCfg().passPct)||DEFAULT_PASS_PCT;
+  function render(){app.innerHTML="";app.appendChild(build());}
+  function build(){
+    const page=el("div",{className:"page",style:{background:"var(--gp)"}});
+    const tb=h("div",{style:{background:"linear-gradient(135deg,var(--gd),var(--g))",padding:"14px 16px",display:"flex",alignItems:"center",justifyContent:"space-between"}});
+    const bb=el("button",{style:{background:"rgba(255,255,255,.1)",border:"1px solid rgba(255,255,255,.2)",color:"#fff",borderRadius:"8px",padding:"6px 12px",cursor:"pointer",fontSize:"13px",fontFamily:"inherit"}},["← Буцах"]);
+    bb.onclick=step===0?onBack:()=>{step--;render();};
+    const stepLabel=["Мэдээлэл","Зааварчилгаа","Шалгалт","Гарын үсэг"][step];
+    tb.appendChild(bb);
+    tb.appendChild(h("div",{style:{fontFamily:"'DM Serif Display',serif",fontSize:"16px",color:"#fff"}},["ХАБЭА"]));
+    tb.appendChild(h("div",{style:{fontSize:"11px",color:"rgba(255,255,255,.5)",textAlign:"right"}},[`${step+1}/4`,h("br"),stepLabel]));
+    page.appendChild(tb);
+    const si=h("div",{className:"step-ind"});
+    [0,1,2,3].forEach(i=>si.appendChild(el("div",{className:"step-dot"+(i<step?" done":i===step?" cur":"")})));
+    page.appendChild(si);
+    const wrap=h("div",{style:{maxWidth:"480px",margin:"0 auto",padding:"0 16px 80px"}});
+    if(step===0)wrap.appendChild(buildInfo());else if(step===1)wrap.appendChild(buildInstr());else if(step===2)wrap.appendChild(buildCheck());else wrap.appendChild(buildSig());
+    page.appendChild(wrap);return page;
+  }
+
+  function buildInfo(){
+    const workers=getWrks();const div=el("div",{className:"fadeUp"});
+    div.appendChild(h("div",{style:{fontFamily:"'DM Serif Display',serif",fontSize:"20px",color:"var(--g)",margin:"8px 0 4px"}},["Мэдээлэл оруулах"]));
+    div.appendChild(h("div",{style:{fontSize:"12px",color:"var(--mut)",marginBottom:"14px"}},["Тасгаа сонгоод нэрээ оруулна уу"]));
+    div.appendChild(h("div",{className:"inp-label"},["Тасаг / Хэлтэс *"]));
+    const deptGrid=el("div",{style:{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:"6px",marginBottom:"14px"}});
+    div.appendChild(deptGrid);
+    const modeWrap=el("div",{style:{display:"flex",gap:"6px",marginBottom:"10px"}});
+    const mkBtn=(lbl,mode)=>el("button",{style:{flex:"1",padding:"9px 6px",borderRadius:"10px",fontSize:"12px",fontWeight:"700",fontFamily:"'DM Sans',sans-serif",cursor:"pointer",transition:"all .15s",border:"1.5px solid",borderColor:state.nameMode===mode?"var(--g)":"var(--bdr)",background:state.nameMode===mode?"var(--g)":"var(--wh)",color:state.nameMode===mode?"#fff":"var(--mut)"}},[lbl]);
+    const modeList=mkBtn("📋 Жагсаалтаас","list");const modeManual=mkBtn("✏️ Өөрөө бичих","manual");
+    modeWrap.appendChild(modeList);modeWrap.appendChild(modeManual);
+    div.appendChild(h("div",{className:"inp-label"},["Нэр оруулах горим"]));div.appendChild(modeWrap);
+    const nameWrap=el("div",{className:"inp-wrap"});div.appendChild(nameWrap);
+    nameWrap.appendChild(h("div",{className:"inp-label"},["Ажилтны нэр *"]));
+    const nameInpList=el("input",{className:"inp",type:"text",placeholder:state.department?"Нэр дарж сонгоно уу ▾":"Эхлээд тасгаа сонгоно уу",value:state.nameMode==="list"?state.name:"",style:{cursor:"pointer",caretColor:"transparent",display:state.nameMode==="list"?"block":"none",background:state.department?"var(--wh)":"#f0f5ff",color:state.department?"var(--ink)":"var(--mut)"}});
+    nameWrap.appendChild(nameInpList);
+    const CYRILLIC_RE=/^[\u0400-\u04FF\s\-]+$/;const LATIN_RE=/[a-zA-Z]/;
+    const nameInpManual=el("input",{className:"inp",type:"text",placeholder:"Монгол үсгээр бичнэ үү",value:state.nameMode==="manual"?state.name:"",style:{display:state.nameMode==="manual"?"block":"none"}});
+    const nameErrMsg=el("div",{style:{fontSize:"11px",color:"#c0392b",fontWeight:"600",marginTop:"4px",display:"none"}},["⚠️ Зөвхөн монгол (кирилл) үсгээр бичнэ үү"]);
+    const nameDupWarn=el("div",{style:{display:"none",marginTop:"6px",padding:"10px 12px",background:"#fffbeb",border:"1.5px solid #f59e0b",borderRadius:"10px",fontSize:"12px",lineHeight:"1.55"}});
+    nameWrap.appendChild(nameInpManual);nameWrap.appendChild(nameErrMsg);nameWrap.appendChild(nameDupWarn);
+    function normalizeName(raw){return raw.trim().replace(/\s+/g," ").split(" ").map(w=>w.length?w[0].toUpperCase()+w.slice(1):"").join(" ");}
+    function checkDuplicateInManual(raw){
+      if(!raw||raw.trim().length<2){nameDupWarn.style.display="none";return;}
+      const nm=raw.trim().toLowerCase();const found=workers.find(w=>normName(w.name)===nm||normName(w.name).startsWith(nm));
+      if(found){nameDupWarn.style.display="block";nameDupWarn.innerHTML="";nameDupWarn.appendChild(h("div",{style:{fontWeight:"700",color:"#d35400",marginBottom:"4px"}},["⚠️ Энэ нэртэй ажилтан жагсаалтад байна"]));const goList=el("button",{style:{padding:"7px 14px",background:"var(--g)",color:"#fff",border:"none",borderRadius:"8px",fontSize:"12px",fontWeight:"700",cursor:"pointer",fontFamily:"inherit"}},["📋 Жагсаалтаас сонгох →"]);goList.onclick=()=>switchMode("list");nameDupWarn.appendChild(goList);}
+      else nameDupWarn.style.display="none";
+    }
+    nameInpManual.oninput=()=>{const raw=nameInpManual.value;if(raw&&LATIN_RE.test(raw)){nameErrMsg.style.display="block";nameInpManual.style.borderColor="#e74c3c";}else{nameErrMsg.style.display="none";nameInpManual.style.borderColor="";}state.name=raw;checkDuplicateInManual(raw);};
+    nameInpManual.addEventListener("blur",()=>{if(nameInpManual.value&&!LATIN_RE.test(nameInpManual.value)){const n=normalizeName(nameInpManual.value);nameInpManual.value=n;state.name=n;}});
+    let nameDropdown=null;
+    function closeDropdown(){if(nameDropdown){nameDropdown.remove();nameDropdown=null;}}
+    function openDropdown(){
+      closeDropdown();if(!state.department)return;
+      const allWrks=getWrks();const filtered=allWrks.filter(w=>w.department===state.department);
+      nameDropdown=el("div",{className:"name-dropdown"});
+      if(!filtered.length){nameDropdown.appendChild(h("div",{className:"name-dropdown-empty"},["Энэ тасагт бүртгэлтэй ажилтан байхгүй\n— Өөрөө бичих горимыг ашиглана уу"]));}
+      else{filtered.forEach(w=>{const it=el("div",{className:"name-dropdown-item"});const av=el("div",{style:{width:"28px",height:"28px",borderRadius:"50%",flexShrink:"0",background:"linear-gradient(135deg,var(--g),var(--gd))",color:"#fff",fontSize:"10px",fontWeight:"700",display:"flex",alignItems:"center",justifyContent:"center"}},[initials(w.name)]);it.appendChild(av);it.appendChild(h("div",{style:{flex:"1"}},[h("div",{style:{fontWeight:"700",fontSize:"13px"}},[w.name]),h("div",{style:{fontSize:"11px",color:"var(--mut)"}},[w.position||""])]));it.addEventListener("mousedown",(e)=>{e.preventDefault();e.stopPropagation();state.name=w.name;state.position=w.position||"";state.phone=w.phone||"";nameInpList.value=w.name;posInp.value=w.position||"";phoneInp.value=w.phone||"";closeDropdown();});nameDropdown.appendChild(it);});}
+      nameWrap.appendChild(nameDropdown);
+    }
+    nameInpList.addEventListener("mousedown",(e)=>{e.preventDefault();if(!state.department){toast("Эхлээд тасгаа сонгоно уу","info");return;}if(nameDropdown)closeDropdown();else openDropdown();});
+    document.addEventListener("mousedown",function outsideClose(e){if(!nameWrap.contains(e.target)){closeDropdown();document.removeEventListener("mousedown",outsideClose);}});
+    function switchMode(mode){
+      state.nameMode=mode;state.name="";state.position="";state.phone="";closeDropdown();nameErrMsg.style.display="none";nameInpManual.style.borderColor="";nameDupWarn.style.display="none";
+      if(mode==="list"){nameInpList.style.display="block";nameInpManual.style.display="none";nameInpList.value="";modeList.style.background="var(--g)";modeList.style.color="#fff";modeList.style.borderColor="var(--g)";modeManual.style.background="var(--wh)";modeManual.style.color="var(--mut)";modeManual.style.borderColor="var(--bdr)";if(state.department)openDropdown();}
+      else{nameInpList.style.display="none";nameInpManual.style.display="block";nameInpManual.value="";modeManual.style.background="var(--g)";modeManual.style.color="#fff";modeManual.style.borderColor="var(--g)";modeList.style.background="var(--wh)";modeList.style.color="var(--mut)";modeList.style.borderColor="var(--bdr)";setTimeout(()=>nameInpManual.focus(),50);}
+      posInp.value="";phoneInp.value="";
+    }
+    modeList.onclick=()=>switchMode("list");modeManual.onclick=()=>switchMode("manual");
+    const pw=el("div",{className:"inp-wrap"});pw.appendChild(h("div",{className:"inp-label"},["Албан тушаал *"]));const posInp=el("input",{className:"inp",type:"text",placeholder:"Жишээ: Оператор",value:state.position});posInp.oninput=()=>{state.position=posInp.value;};pw.appendChild(posInp);div.appendChild(pw);
+    const phw=el("div",{className:"inp-wrap"});phw.appendChild(h("div",{className:"inp-label"},["Утасны дугаар"]));const phoneInp=el("input",{className:"inp",type:"tel",placeholder:"99XXXXXX",value:state.phone});phoneInp.oninput=()=>{state.phone=phoneInp.value;};phw.appendChild(phoneInp);div.appendChild(phw);
+    DEPTS.forEach(dept=>{
+      const db=el("button",{style:{padding:"10px 6px",border:"1.5px solid",borderRadius:"10px",fontSize:"13px",fontWeight:"600",fontFamily:"'DM Sans',sans-serif",cursor:"pointer",transition:"all .15s",textAlign:"center",borderColor:state.department===dept?"var(--g)":"var(--bdr)",background:state.department===dept?"var(--g)":"var(--wh)",color:state.department===dept?"#fff":"var(--ink)"}},[dept]);
+      db.onclick=()=>{state.department=dept;state.name="";state.position="";state.phone="";nameInpList.value="";nameInpManual.value="";posInp.value="";phoneInp.value="";deptGrid.querySelectorAll("button").forEach(b=>{b.style.background="var(--wh)";b.style.color="var(--ink)";b.style.borderColor="var(--bdr)";});db.style.background="var(--g)";db.style.color="#fff";db.style.borderColor="var(--g)";nameInpList.style.background="var(--wh)";nameInpList.style.color="var(--ink)";nameInpList.placeholder="Нэр дарж сонгоно уу ▾";if(state.nameMode==="list")openDropdown();else{closeDropdown();setTimeout(()=>nameInpManual.focus(),50);}};
+      deptGrid.appendChild(db);
+    });
+    const nb=el("button",{className:"btn btn-p",style:{marginTop:"8px"}},["Үргэлжлүүлэх →"]);
+    nb.onclick=()=>{
+      let nm=state.nameMode==="manual"?normalizeName(nameInpManual.value):state.name.trim();
+      const cfg3=getCfg();
+      if(cfg3.regStart&&cfg3.regEnd){const p2=_getUBDate(),nm2=parseInt(p2.hour)*60+parseInt(p2.minute);const[sh,sm]=(cfg3.regStart).split(":").map(Number);const[eh,em]=(cfg3.regEnd).split(":").map(Number);if(nm2<sh*60+sm||nm2>eh*60+em)return toast("Бүртгэлт "+cfg3.regStart+"-"+cfg3.regEnd+" цагт л боломжтой","err");}
+      if(!nm)return toast(state.nameMode==="list"?"Нэрийг сонгоно уу":"Нэрийг бичнэ үү","err");
+      if(state.nameMode==="manual"&&LATIN_RE.test(nm))return toast("Зөвхөн монгол (кирилл) үсгээр бичнэ үү","err");
+      if(state.nameMode==="manual"&&nm&&!CYRILLIC_RE.test(nm))return toast("Нэрт зөвхөн монгол үсэг, зай, зураас ашиглана уу","err");
+      if(state.nameMode==="manual"){const dup=workers.find(w=>normName(w.name)===normName(nm));if(dup){nameDupWarn.style.display="block";return toast("\""+dup.name+"\" жагсаалтад байна — жагсаалтаас сонгоно уу","err");}}
+      if(!state.department)return toast("Тасгийг сонгоно уу","err");const pos=posInp.value.trim();if(!pos)return toast("Албан тушаалыг оруулна уу","err");
+      if(isBlacklisted(nm)){app.innerHTML="";const page=h("div",{className:"center-page",style:{background:"var(--gp)"}});const card=el("div",{className:"glass scaleIn",style:{maxWidth:"340px",width:"100%",padding:"32px",textAlign:"center"}});card.appendChild(h("div",{style:{fontSize:"56px",marginBottom:"12px"}},["🚫"]));card.appendChild(h("div",{style:{fontFamily:"'DM Serif Display',serif",fontSize:"16px",color:"#c0392b",margin:"16px 0 6px"}},["Нэвтрэх эрхгүй"]));card.appendChild(h("div",{style:{fontSize:"13px",color:"var(--mut)",marginBottom:"8px"}},[nm]));card.appendChild(h("div",{style:{fontSize:"12px",color:"var(--mut)",background:"#fef2f2",borderRadius:"12px",padding:"12px",marginBottom:"20px",lineHeight:"1.6"}},["Таны бүртгэл менежерт хасагдсан байна.\nДахин нэвтрэх эрх байхгүй.\n\nЛавлах бол менежертэй холбогдоно уу."]));card.appendChild(el("button",{className:"btn btn-o",onclick:renderHome},["← Буцах"]));page.appendChild(card);app.appendChild(page);return;}
+      if(state.nameMode==="manual")nameInpManual.value=nm;state.name=nm;state.position=pos;state.phone=phoneInp.value.trim();
+      if(hasSignedToday(nm)){app.innerHTML="";const page=h("div",{className:"center-page",style:{background:"var(--gp)"}});const card=el("div",{className:"glass scaleIn",style:{maxWidth:"340px",width:"100%",padding:"32px",textAlign:"center"}});card.appendChild(h("div",{style:{fontSize:"48px",marginBottom:"12px"}},["✅"]));card.appendChild(h("div",{style:{fontFamily:"'DM Serif Display',serif",fontSize:"16px",color:"var(--g)",margin:"14px 0 6px"}},["Өнөөдөр аль хэдийн бүртгүүлсэн байна"]));card.appendChild(h("div",{style:{fontSize:"12px",color:"var(--mut)",marginBottom:"20px"}},[nm+" та өнөөдрийн ХАБЭА бүртгэлд гарын үсэг зурсан байна."]));card.appendChild(el("button",{className:"btn btn-p",onclick:renderHome},["Нүүр хуудас"]));page.appendChild(card);app.appendChild(page);return;}
+      step=1;render();
+    };
+    div.appendChild(nb);return div;
+  }
+
+  function buildInstr(){
+    const div=el("div",{className:"fadeUp"});const card=el("div",{className:"card",style:{marginTop:"8px"}});
+    card.appendChild(h("div",{className:"card-head"},["📋 Аюулгүй ажиллагааны санамж"]));
+    const activeInstr=getInstructions()||INSTRUCTIONS;
+    activeInstr.forEach((txt,i)=>{const r=h("div",{className:"instr-item"});r.appendChild(h("div",{className:"instr-num"},[String(i+1)]));r.appendChild(h("div",{className:"instr-txt"},[txt]));card.appendChild(r);});
+    const cw=el("div",{className:"confirm-wrap"});const cb=el("div",{className:"confirm-box"+(state.instrRead?" on":"")});if(state.instrRead)cb.innerHTML=chk();cw.appendChild(cb);cw.appendChild(h("div",{style:{fontSize:"13px",fontWeight:"700"}},["Санамжийг уншиж танилцсан"]));cw.onclick=()=>{state.instrRead=!state.instrRead;cb.className="confirm-box"+(state.instrRead?" on":"");cb.innerHTML=state.instrRead?chk():"";};card.appendChild(cw);div.appendChild(card);
+    const nb=el("button",{className:"btn btn-p",style:{marginTop:"4px"}},["Үргэлжлүүлэх →"]);nb.onclick=()=>{if(!state.instrRead)return toast("Санамжийг уншсанаа тэмдэглэнэ үү","err");step=2;render();};div.appendChild(nb);return div;
+  }
+
+  function buildCheck(){
+    const div=el("div",{className:"fadeUp"});const card=el("div",{className:"card",style:{marginTop:"8px"}});card.appendChild(h("div",{className:"card-head"},["✅ Өдрийн шалгах хуудас"]));
+    const activeCL=lsGet("habea_checklist_v1")||CHECKLIST;const allItems=activeCL.flatMap(c=>c.items);
+    activeCL.forEach(g=>{card.appendChild(h("div",{className:"check-cat"},[g.cat]));g.items.forEach(item=>{const r=el("div",{className:"check-item"});const b=el("div",{className:"check-box"+(state.checked.has(item)?" on":"")});if(state.checked.has(item))b.innerHTML=chk();r.appendChild(b);r.appendChild(h("div",{className:"check-txt"},[item]));r.onclick=()=>{if(state.checked.has(item)){state.checked.delete(item);b.className="check-box";b.innerHTML="";}else{state.checked.add(item);b.className="check-box on";b.innerHTML=chk();}pg.textContent=`${state.checked.size} / ${allItems.length} биелүүлсэн (шаардлага: ≥${PASS_PCT}%)`;};card.appendChild(r);});});
+    const pg=el("div",{style:{marginTop:"12px",padding:"10px 12px",background:"var(--gp)",borderRadius:"10px",fontSize:"12px",color:"var(--mut)"}});pg.textContent=`${state.checked.size} / ${allItems.length} биелүүлсэн (шаардлага: ≥${PASS_PCT}%)`;card.appendChild(pg);div.appendChild(card);
+    const nb=el("button",{className:"btn btn-p",style:{marginTop:"4px"}},["Гарын үсэг зурах →"]);nb.onclick=()=>{const minReq=Math.ceil(allItems.length*PASS_PCT/100);if(state.checked.size<minReq)return toast(`Шалгалт дутуу! Дор хаяж ${minReq} зүйл (${PASS_PCT}%) биелүүлнэ үү.`,"err");step=3;render();};div.appendChild(nb);return div;
+  }
+
+  function buildSig(){
+    const div=el("div",{className:"fadeUp"});const card=el("div",{className:"card",style:{marginTop:"8px"}});card.appendChild(h("div",{className:"card-head"},["✍️ Гарын үсэг"]));
+    const so=el("div",{className:"sig-outer",style:{height:"160px"}});const hint=h("div",{className:"sig-hint"},["Энд гарын үсгээ зурна уу"]);
+    sigCanvas=el("canvas",{style:{display:"block",width:"100%",height:"160px",background:"#fff"}});const clr=el("button",{className:"sig-clear"},["Арилгах"]);
+    so.appendChild(sigCanvas);so.appendChild(hint);so.appendChild(clr);card.appendChild(so);
+    function initCanvas(){const w=so.offsetWidth;if(!w){requestAnimationFrame(initCanvas);return;}sigCanvas.width=w;sigCanvas.height=160;sigCtx=sigCanvas.getContext("2d");sigCtx.fillStyle="#fff";sigCtx.fillRect(0,0,sigCanvas.width,sigCanvas.height);sigCtx.strokeStyle="#1a2040";sigCtx.lineWidth=2.5;sigCtx.lineCap="round";sigCtx.lineJoin="round";}
+    requestAnimationFrame(initCanvas);
+    function pos(e){const r=sigCanvas.getBoundingClientRect(),t=e.touches?e.touches[0]:e;return[(t.clientX-r.left)*(sigCanvas.width/r.width),(t.clientY-r.top)*(sigCanvas.height/r.height)];}
+    sigCanvas.addEventListener("mousedown",e=>{if(!sigCtx)return;drawing=true;const[x,y]=pos(e);sigCtx.beginPath();sigCtx.moveTo(x,y);});
+    sigCanvas.addEventListener("mousemove",e=>{if(!drawing||!sigCtx)return;hasDrawn=true;hint.style.opacity="0";const[x,y]=pos(e);sigCtx.lineTo(x,y);sigCtx.stroke();});
+    sigCanvas.addEventListener("mouseup",()=>{drawing=false;});sigCanvas.addEventListener("mouseleave",()=>{drawing=false;});
+    sigCanvas.addEventListener("touchstart",e=>{e.preventDefault();if(!sigCtx)return;drawing=true;const[x,y]=pos(e);sigCtx.beginPath();sigCtx.moveTo(x,y);},{passive:false});
+    sigCanvas.addEventListener("touchmove",e=>{e.preventDefault();if(!drawing||!sigCtx)return;hasDrawn=true;hint.style.opacity="0";const[x,y]=pos(e);sigCtx.lineTo(x,y);sigCtx.stroke();},{passive:false});
+    sigCanvas.addEventListener("touchend",()=>{drawing=false;});
+    clr.onclick=()=>{if(!sigCtx)return;sigCtx.clearRect(0,0,sigCanvas.width,sigCanvas.height);hint.style.opacity="1";hasDrawn=false;};
+    const activeCL=lsGet("habea_checklist_v1")||CHECKLIST;const dynItems=activeCL.flatMap(c=>c.items);const passed=state.checked.size>=Math.ceil(dynItems.length*PASS_PCT/100);
+    const sm=el("div",{style:{marginTop:"12px",padding:"12px",background:"var(--gp)",borderRadius:"12px",fontSize:"12px"}});
+    sm.innerHTML=`<b style="color:var(--g)">${state.name}</b> — ${state.position} | ${state.department}<br>Шалгалт: <b style="color:${passed?"var(--g)":"#e74c3c"}">${state.checked.size}/${dynItems.length} ${passed?"✅ Тэнцсэн":"⚠️ Дутуу"}</b><br>📅 ${toDay()} · 🕐 УБ цаг`;
+    card.appendChild(sm);div.appendChild(card);
+    const sb=el("button",{className:"btn btn-p",style:{marginTop:"4px"}},["Бүртгүүлэх ✓"]);
+    sb.onclick=async()=>{
+      if(!hasDrawn)return toast("Гарын үсгээ зурна уу","err");
+      sb.textContent="Хадгалж байна...";sb.disabled=true;
+      const signTime=toNow();
+      if(sigCtx){sigCtx.save();sigCtx.globalAlpha=0.22;sigCtx.fillStyle="#1a4a8a";sigCtx.font="bold 11px sans-serif";sigCtx.fillText(state.name.trim()+" | "+toDay(),6,sigCanvas.height-6);sigCtx.restore();}
+      const tc=document.createElement("canvas");tc.width=sigCanvas.width;tc.height=sigCanvas.height;const tx=tc.getContext("2d");tx.fillStyle="#fff";tx.fillRect(0,0,tc.width,tc.height);tx.drawImage(sigCanvas,0,0);
+      const rec={name:state.name.trim(),department:state.department.trim(),position:state.position.trim(),phone:state.phone.trim(),date:toDay(),time:signTime,passed,instrRead:state.instrRead,checkedCount:state.checked.size,signature:tc.toDataURL("image/jpeg",0.8)};
+      const recs=getRecs();recs.push(rec);saveRecs(recs);
+      autoSaveWorker({name:rec.name,department:rec.department,position:rec.position,phone:rec.phone});
+      await sendSheets(rec);onDone(rec);
+    };
+    div.appendChild(sb);return div;
+  }
+  render();
+}
+
+// ════════════════════════════════════════════════════════════
+// ✅ АМЖИЛТ
+// ════════════════════════════════════════════════════════════
+function renderSuccess(rec,onHome){
+  const app=document.getElementById("app");app.innerHTML="";
+  const page=h("div",{className:"center-page",style:{background:"var(--gp)"}});
+  const card=el("div",{className:"glass scaleIn",style:{maxWidth:"360px",width:"100%",padding:"36px 28px",textAlign:"center"}});
+  const circ=el("div",{className:"ok-circle"});circ.innerHTML='<svg width="36" height="30" viewBox="0 0 36 30" fill="none"><polyline points="2,15 13,26 34,2" stroke="white" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" style="stroke-dasharray:100;animation:checkDraw .6s ease .15s both"/></svg>';
+  card.appendChild(circ);
+  card.appendChild(h("div",{style:{fontFamily:"'DM Serif Display',serif",fontSize:"20px",color:"var(--g)"}},[ORG_NAME]));
+  card.appendChild(h("div",{style:{fontFamily:"'DM Serif Display',serif",fontSize:"18px",color:"var(--g)",margin:"8px 0 6px"}},["Амжилттай бүртгэгдлээ!"]));
+  card.appendChild(h("div",{style:{color:"var(--mut)",fontSize:"13px",marginBottom:"16px"}},[rec.name+" танд баярлалаа."]));
+  const info=el("div",{style:{background:"var(--gp)",borderRadius:"12px",padding:"12px",fontSize:"12px",color:"var(--mut)",marginBottom:"20px",textAlign:"left"}});
+  info.innerHTML=`<div>📅 ${rec.date} — 🕐 УБ цаг: ${rec.time}</div><div>🏢 ${rec.department} | ${rec.position}</div><div>Шалгалт: <b style="color:${rec.passed?"var(--g)":"#e74c3c"}">${rec.passed?"Тэнцсэн ✅":"Дутуу ⚠️"}</b></div>`;
+  card.appendChild(info);card.appendChild(el("button",{className:"btn btn-p",onclick:onHome},["Нүүр хуудас"]));
+  page.appendChild(card);app.appendChild(page);
+}
+
+// ════════════════════════════════════════════════════════════
+// 🛡️ МЕНЕЖЕР
+// ════════════════════════════════════════════════════════════
+function renderManager(onLogout){
+  const app=document.getElementById("app");
+  let tab="dashboard";let selDate=toDay();
+  let rt=setInterval(()=>{if(tab==="today")render();},10000);
+  let lastAct=Date.now();
+  const stInterval=setInterval(()=>{if(Date.now()-lastAct>30*60*1000){clearInterval(rt);clearInterval(stInterval);toast("30 минут идэвхгүй байсан тул гарлаа","info");onLogout();}},60000);
+  document.addEventListener("click",()=>{lastAct=Date.now();},{passive:true});
+
+  async function syncFromSheets(date){const remote=await fetchTodayFromSheets(date);if(!remote.length)return;const local=getRecs();const merged=mergeRecords(local,remote);saveRecs(merged);}
+  async function syncWorkersFromSheets(){const ws=await fetchWorkersFromSheets();if(!ws||!ws.length)return;const local=getWrks();const seen=new Set(local.map(w=>normName(w.name)));const bl=new Set(getBlacklist().map(b=>normName(b.name)));let added=0;ws.forEach(w=>{if(!seen.has(normName(w.name))&&!bl.has(normName(w.name))){local.push(w);seen.add(normName(w.name));added++;}});if(added>0)saveWrks(local);}
+
+  function showAttendanceModal(workerName){
+    const overlay=el("div",{className:"modal-overlay"});const mc=el("div",{className:"modal-card"});mc.appendChild(h("div",{className:"modal-title"},["📅 "+workerName+" — Ирцийн түүх"]));
+    const recs=getRecs().filter(r=>normName(r.name)===normName(workerName)).sort((a,b)=>b.date.localeCompare(a.date));
+    if(!recs.length)mc.appendChild(h("div",{style:{color:"var(--mut)",fontSize:"13px",padding:"12px 0",textAlign:"center"}},["Бүртгэл байхгүй"]));
+    else{const tot=recs.length,pass=recs.filter(r=>r.passed).length;mc.appendChild(h("div",{style:{background:"var(--gp)",borderRadius:"10px",padding:"10px",marginBottom:"12px",fontSize:"12px"}},["Нийт: "+tot+" өдөр · Тэнцсэн: "+pass+" · Дутуу: "+(tot-pass)]));recs.slice(0,20).forEach(r=>{const row=el("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"6px 0",borderBottom:"1px solid var(--gp)",fontSize:"12px"}});row.appendChild(h("div",{style:{fontWeight:"700"}},[r.date]));row.appendChild(h("div",{style:{color:"var(--mut)"}},[safeTime(r.time)||""]));row.appendChild(el("div",{className:"badge "+(r.passed?"bg-g":"bg-o")},[r.passed?"✓":"⚠"]));mc.appendChild(row);});}
+    const closeBtn=el("button",{className:"btn btn-o",style:{marginTop:"16px"}},["Хаах"]);closeBtn.onclick=()=>overlay.remove();mc.appendChild(closeBtn);overlay.appendChild(mc);overlay.onclick=e=>{if(e.target===overlay)overlay.remove();};document.body.appendChild(overlay);
+  }
+
+  function showWorkerModal(worker,idx,onSave){
+    const overlay=el("div",{className:"modal-overlay"});const mc=el("div",{className:"modal-card"});mc.appendChild(h("div",{className:"modal-title"},["✏️ Ажилтны мэдээлэл засах"]));
+    const nn=el("input",{className:"inp",style:{marginBottom:"8px"},type:"text",placeholder:"Нэр",value:worker.name||""});mc.appendChild(h("div",{className:"inp-label"},["Нэр"]));mc.appendChild(nn);
+    mc.appendChild(h("div",{className:"inp-label",style:{marginTop:"8px"}},["Тасаг"]));const nd=el("select",{className:"sel",style:{marginBottom:"8px"}});DEPTS.forEach(d=>{const o=el("option",{value:d},[d]);if(d===worker.department)o.selected=true;nd.appendChild(o);});mc.appendChild(nd);
+    mc.appendChild(h("div",{className:"inp-label",style:{marginTop:"8px"}},["Албан тушаал"]));const np=el("input",{className:"inp",style:{marginBottom:"8px"},type:"text",placeholder:"Албан тушаал",value:worker.position||""});mc.appendChild(np);
+    mc.appendChild(h("div",{className:"inp-label",style:{marginTop:"8px"}},["Утас"]));const nph=el("input",{className:"inp",style:{marginBottom:"16px"},type:"tel",placeholder:"99XXXXXX",value:worker.phone||""});mc.appendChild(nph);
+    const btns=h("div",{style:{display:"flex",gap:"8px"}});const save=el("button",{className:"btn btn-p",style:{flex:"1"}},["Хадгалах"]);save.onclick=()=>{if(!nn.value.trim())return toast("Нэр оруулна уу","err");onSave({name:nn.value.trim(),department:nd.value,position:np.value.trim(),phone:nph.value.trim()});overlay.remove();};const cancel=el("button",{className:"btn btn-o",style:{flex:"1"}},["Цуцлах"]);cancel.onclick=()=>overlay.remove();btns.appendChild(cancel);btns.appendChild(save);mc.appendChild(btns);overlay.appendChild(mc);overlay.onclick=e=>{if(e.target===overlay)overlay.remove();};document.body.appendChild(overlay);
+  }
+
+  function render(){
+    app.innerHTML="";app.appendChild(build());
+    if(tab==="dashboard"||tab==="today"){syncFromSheets(toDay()).then(()=>syncWorkersFromSheets()).catch(()=>{});}
+    else if(tab==="report")syncFromSheets(selDate).catch(()=>{});
+  }
+
+  function build(){
+    const recs=getRecs(),workers=getWrks();
+    const todayRecs=recs.filter(r=>r.date===toDay());
+    const signedSet=new Set(todayRecs.map(r=>normName(r.name)));
+    const unsigned=workers.filter(w=>!signedSet.has(normName(w.name)));
+    const TABS=[{id:"dashboard",l:"🏠 Хянах"},{id:"today",l:"📊 Өнөөдөр"},{id:"report",l:"📋 Тайлан"},{id:"workers",l:"👥 Ажилтан"},{id:"guide",l:"🔧 Заавар"},{id:"settings",l:"⚙️ Тохиргоо"}];
+    const page=el("div",{className:"page"});
+    const hdr=el("div",{className:"mgr-hdr"});
+    const ht=h("div",{style:{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:"10px"}});
+    ht.appendChild(h("div",{style:{display:"flex",alignItems:"center",gap:"8px"}},[h("div",{style:{fontFamily:"'DM Serif Display',serif",fontSize:"18px",color:"#fff"}},[ORG_NAME]),h("div",{style:{color:"rgba(255,255,255,.4)",fontSize:"10px",letterSpacing:".08em"}},["МЕНЕЖЕР"])]));
+    const rfr=el("button",{style:{background:"rgba(255,255,255,.1)",border:"1px solid rgba(255,255,255,.15)",color:"#fff",borderRadius:"8px",padding:"6px 10px",cursor:"pointer",fontSize:"13px"}},["🔄"]);rfr.onclick=render;
+    const out=el("button",{style:{background:"#e74c3c",border:"none",color:"#fff",borderRadius:"8px",padding:"6px 12px",cursor:"pointer",fontSize:"12px",fontWeight:"700",fontFamily:"inherit"}},["← Гарах"]);out.onclick=()=>{clearInterval(rt);clearInterval(stInterval);rt=null;onLogout();};
+    ht.appendChild(h("div",{style:{display:"flex",gap:"6px"}},[rfr,out]));hdr.appendChild(ht);
+    const tr=el("div",{className:"mgr-tabs"});TABS.forEach(t=>{const b=el("button",{className:"mgr-tab"+(tab===t.id?" on":"")});b.textContent=t.l;b.onclick=()=>{tab=t.id;render();};tr.appendChild(b);});
+    hdr.appendChild(tr);page.appendChild(hdr);
+    const body=el("div",{className:"mgr-body"});
+
+    if(tab==="dashboard"){
+      body.appendChild(h("div",{style:{fontSize:"12px",color:"var(--mut)",marginBottom:"14px"}},["📅 "+toDay()+" · 🕐 УБ цаг: "+toNow()]));
+      const deptStats=DEPTS.map(dept=>{const dw=workers.filter(w=>w.department===dept);const ds=todayRecs.filter(r=>r.department===dept);const pct=dw.length>0?Math.round(ds.length/dw.length*100):0;return{dept,total:dw.length,signed:ds.length,pct};}).filter(d=>d.total>0);
+      const totPct=workers.length>0?Math.round(todayRecs.length/workers.length*100):0;
+      const statCard=el("div",{className:"card fadeUp"});statCard.appendChild(h("div",{className:"card-head"},["📊 Өнөөдрийн нийт байдал"]));
+      const bigStat=el("div",{style:{display:"flex",gap:"8px",marginBottom:"16px"}});
+      [{l:"Нийт",v:workers.length,i:"👥"},{l:"Ирсэн",v:todayRecs.length,i:"✅",c:"var(--g)"},{l:"Дутуу",v:unsigned.length,i:"⚠️",c:"#d35400"},{l:"Гүйцэтгэл",v:totPct+"%",i:"📈",c:totPct>=80?"var(--g)":"#e74c3c"}].forEach(s=>{const b=el("div",{className:"stat-box"});b.appendChild(h("div",{className:"stat-ico"},[s.i]));b.appendChild(h("div",{className:"stat-val",style:{color:s.c||"var(--ink)",fontSize:"20px"}},[String(s.v)]));b.appendChild(h("div",{className:"stat-lbl"},[s.l]));bigStat.appendChild(b);});
+      statCard.appendChild(bigStat);
+      const pw=el("div",{style:{background:"var(--gm)",borderRadius:"10px",height:"12px",overflow:"hidden",marginBottom:"6px"}});const pb=el("div",{style:{height:"100%",width:totPct+"%",background:totPct>=80?"linear-gradient(90deg,var(--g),var(--gl))":"linear-gradient(90deg,#e67e22,#e74c3c)",borderRadius:"10px",transition:"width .6s ease"}});pw.appendChild(pb);statCard.appendChild(pw);statCard.appendChild(h("div",{style:{fontSize:"11px",color:"var(--mut)",textAlign:"right",marginBottom:"4px"}},[totPct+"% бүртгэгдсэн"]));body.appendChild(statCard);
+      const dCard=el("div",{className:"card fadeUp"});dCard.appendChild(h("div",{className:"card-head"},["🏭 Тасгийн бүртгэлийн байдал"]));
+      deptStats.forEach(d=>{const dRow=el("div",{style:{marginBottom:"12px"}});const dHead=el("div",{style:{display:"flex",justifyContent:"space-between",marginBottom:"4px"}});dHead.appendChild(h("div",{style:{fontSize:"12px",fontWeight:"700"}},[d.dept]));dHead.appendChild(h("div",{style:{fontSize:"12px",color:d.pct>=80?"var(--g)":"#d35400",fontWeight:"700"}},[d.signed+"/"+d.total+" ("+d.pct+"%)"]) );const bar=el("div",{style:{background:"var(--gm)",borderRadius:"6px",height:"10px",overflow:"hidden"}});const fill=el("div",{style:{height:"100%",width:d.pct+"%",background:d.pct>=80?"linear-gradient(90deg,var(--g),var(--gl))":d.pct>=50?"linear-gradient(90deg,#e67e22,#f39c12)":"linear-gradient(90deg,#e74c3c,#c0392b)",borderRadius:"6px",transition:"width .6s ease"}});bar.appendChild(fill);dRow.appendChild(dHead);dRow.appendChild(bar);dCard.appendChild(dRow);});body.appendChild(dCard);
+      body.appendChild(el("a",{href:SHEET_URL,target:"_blank",style:{display:"block",textAlign:"center",color:"var(--g)",fontSize:"12px",marginTop:"8px",textDecoration:"none",fontWeight:"700"}},["📊 Google Sheets →"]));
+    }
+    else if(tab==="today"){
+      const sb=el("div",{className:"sync-bar fadeUp"});sb.innerHTML='<span class="spin">🔄</span> Sheets-ээс шинэчлэж байна...';body.appendChild(sb);
+      fetchTodayFromSheets(toDay()).then(remote=>{sb.innerHTML=remote.length?`☁️ ${remote.length} бүртгэл нэгтгэгдлээ`:"☁️ Sheets синк хийгдлээ";setTimeout(()=>sb.remove(),3000);}).catch(()=>{sb.remove();});
+      const sr=el("div",{className:"stat-row fadeUp"});const pct=workers.length>0?Math.round(todayRecs.length/workers.length*100):0;
+      [{l:"Нийт",v:workers.length,i:"👥"},{l:"Бүртгэгдсэн",v:todayRecs.length,i:"✅",c:"var(--g)"},{l:"Бүртгэлгүй",v:unsigned.length,i:"⚠️",c:"#d35400"},{l:"Гүйцэтгэл",v:pct+"%",i:"📊",c:pct>=80?"var(--g)":"#d35400"}].forEach(s=>{const b=el("div",{className:"stat-box"});b.appendChild(h("div",{className:"stat-ico"},[s.i]));b.appendChild(h("div",{className:"stat-val",style:{color:s.c||"var(--ink)"}},[String(s.v)]));b.appendChild(h("div",{className:"stat-lbl"},[s.l]));sr.appendChild(b);});body.appendChild(sr);
+      const sc=el("div",{className:"card fadeUp"});sc.appendChild(h("div",{className:"card-head"},["✅ Бүртгэгдсэн — "+todayRecs.length]));
+      if(!todayRecs.length)sc.appendChild(h("div",{style:{color:"var(--mut)",fontSize:"13px",padding:"12px 0",textAlign:"center"}},["Одоогоор бүртгэл байхгүй"]));
+      else todayRecs.forEach(r=>{const row=el("div",{className:"w-row"});row.appendChild(el("div",{className:"w-av"},[initials(r.name)]));row.appendChild(h("div",{style:{flex:"1"}},[h("div",{className:"w-name"},[r.name]),h("div",{className:"w-sub"},[(r.position||r.department)+" — УБ "+safeTime(r.time)])]));if(r.signature&&r.signature!=="signed")row.appendChild(el("img",{src:r.signature,className:"w-sig"}));else row.appendChild(h("div",{style:{color:"var(--g)",fontSize:"16px"}},["✓"]));sc.appendChild(row);});body.appendChild(sc);
+      if(unsigned.length>0){const uc=el("div",{className:"card fadeUp"});uc.appendChild(h("div",{className:"card-head",style:{color:"#d35400"}},["⚠️ Бүртгүүлээгүй — "+unsigned.length]));unsigned.forEach(w=>{const row=el("div",{className:"w-row"});row.appendChild(el("div",{className:"w-av",style:{background:"linear-gradient(135deg,#e67e22,#d35400)"}},[initials(w.name)]));row.appendChild(h("div",{style:{flex:"1"}},[h("div",{className:"w-name"},[w.name]),h("div",{className:"w-sub"},[(w.position||"")+" • "+(w.department||"")])]));row.appendChild(el("div",{className:"badge bg-o"},["Бүртгэлгүй"]));uc.appendChild(row);});body.appendChild(uc);}
+      body.appendChild(el("a",{href:SHEET_URL,target:"_blank",style:{display:"block",textAlign:"center",color:"var(--g)",fontSize:"12px",marginTop:"8px",textDecoration:"none",fontWeight:"700"}},["📊 Google Sheets →"]));
+    }
+    else if(tab==="report"){
+      const topRow=h("div",{style:{display:"flex",alignItems:"center",gap:"8px",marginBottom:"12px",flexWrap:"wrap"}});
+      const di=el("input",{className:"inp",style:{maxWidth:"160px"},type:"date",value:mnToISO(selDate)});di.onchange=()=>{if(di.value){selDate=isoToMn(di.value);render();}};
+      const rsb=el("button",{className:"btn btn-o btn-sm"},["🔄 Sheets синк"]);rsb.onclick=async()=>{rsb.disabled=true;rsb.textContent="...";await syncFromSheets(selDate);rsb.textContent="✓";setTimeout(()=>render(),400);};
+      topRow.appendChild(h("div",{style:{fontSize:"12px",color:"var(--mut)",fontWeight:"700"}},["📅 Огноо:"]));topRow.appendChild(di);topRow.appendChild(rsb);body.appendChild(topRow);
+      buildDetailReport(body,selDate,getRecs().filter(r=>r.date===selDate));
+    }
+    else if(tab==="workers"){
+      const wc=el("div",{className:"card fadeUp"});wc.appendChild(h("div",{className:"card-head"},["👥 Ажилтнууд ("+workers.length+")"]));
+      const srch=el("input",{className:"inp",type:"search",placeholder:"🔍 Нэрээр хайх...",style:{marginBottom:"10px",fontSize:"13px"}});srch.oninput=()=>{const q=srch.value.toLowerCase();wc.querySelectorAll(".w-row,.w-row-blocked").forEach(row=>{const nm=row.querySelector(".w-name");if(nm)row.style.display=(!q||nm.textContent.toLowerCase().includes(q))?"flex":"none";});};wc.appendChild(srch);
+      const wsb=el("button",{className:"btn btn-o btn-sm",style:{marginBottom:"10px"}},["🔄 Sheets-ээс ажилтан татах"]);wsb.onclick=async()=>{wsb.disabled=true;wsb.textContent="Татаж байна...";await syncWorkersFromSheets();wsb.textContent="✓";setTimeout(()=>render(),500);};wc.appendChild(wsb);
+      const addSec=el("div",{style:{background:"var(--gp)",borderRadius:"12px",padding:"14px",marginBottom:"14px",border:"1px solid var(--bdr)"}});
+      addSec.appendChild(h("div",{style:{fontSize:"12px",fontWeight:"700",color:"var(--g)",marginBottom:"10px"}},["+ Шинэ ажилтан нэмэх"]));
+      const ag=el("div",{style:{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"6px",marginBottom:"6px"}});
+      const nn=el("input",{className:"inp",type:"text",placeholder:"Бүтэн нэр"});const nd=el("select",{className:"sel"});const defOpt=el("option",{value:""},[" — Тасаг — "]);defOpt.disabled=true;defOpt.selected=true;nd.appendChild(defOpt);DEPTS.forEach(d=>{nd.appendChild(el("option",{value:d},[d]));});ag.appendChild(nn);ag.appendChild(nd);addSec.appendChild(ag);
+      const np=el("input",{className:"inp",type:"text",placeholder:"Албан тушаал",style:{marginBottom:"6px"}});const nph=el("input",{className:"inp",type:"tel",placeholder:"Утасны дугаар",style:{marginBottom:"8px"}});addSec.appendChild(np);addSec.appendChild(nph);
+      const ab=el("button",{className:"btn btn-p btn-sm"},["+ Нэмэх"]);ab.onclick=()=>{if(!nn.value.trim())return toast("Нэр оруулна уу","err");if(!nd.value)return toast("Тасгийг сонгоно уу","err");if(!np.value.trim())return toast("Албан тушаал оруулна уу","err");if(isBlacklisted(nn.value.trim()))return toast("Энэ ажилтан хасагдсан байна","err");const ws=getWrks();if(ws.find(w=>normName(w.name)===normName(nn.value.trim())))return toast("Аль хэдийн бүртгэлтэй","info");const nw={name:nn.value.trim(),department:nd.value,position:np.value.trim(),phone:nph.value.trim()};const upd=[...ws,nw];saveWrks(upd);syncWorkers(upd);toast("Нэмэгдлээ ✓");render();};addSec.appendChild(ab);wc.appendChild(addSec);
+      const newWkrNames=new Set(getNewWorkers().filter(x=>(Date.now()-x.ts)<24*60*60*1000).map(x=>normName(x.name)));
+      if(!workers.length){wc.appendChild(h("div",{style:{color:"var(--mut)",fontSize:"13px",padding:"8px 0",textAlign:"center"}},["Ажилтан байхгүй"]));}
+      else{
+        const byDept={};workers.forEach((w,i)=>{const d=w.department||"Бусад";if(!byDept[d])byDept[d]=[];byDept[d].push({w,i});});
+        Object.entries(byDept).forEach(([dept,list])=>{
+          wc.appendChild(h("div",{style:{fontSize:"11px",fontWeight:"700",color:"var(--mut)",letterSpacing:".06em",textTransform:"uppercase",margin:"10px 0 4px"}},[dept+" ("+list.length+")"]));
+          list.forEach(({w,i})=>{
+            const isNew=newWkrNames.has(normName(w.name));
+            const row=el("div",{className:"w-row",style:isNew?{background:"#fffbeb",borderRadius:"10px",padding:"8px",border:"1px solid #f59e0b"}:{}});
+            row.appendChild(el("div",{className:"w-av",style:isNew?{background:"linear-gradient(135deg,#f59e0b,#d97706)"}:{}},[initials(w.name)]));
+            row.appendChild(h("div",{style:{flex:"1"}},[h("div",{style:{display:"flex",alignItems:"center",gap:"5px"}},[h("div",{className:"w-name"},[w.name]),isNew?el("span",{style:{background:"#f59e0b",color:"#fff",padding:"1px 6px",borderRadius:"10px",fontSize:"9px",fontWeight:"700"}},["🆕"]):null]),h("div",{className:"w-sub"},[w.department+" · "+w.position+(w.phone?" | 📞"+w.phone:"")])]));
+            const hb=el("button",{className:"btn btn-o btn-sm",style:{marginRight:"4px"}},["📅"]);hb.onclick=()=>showAttendanceModal(w.name);
+            const eb=el("button",{className:"btn btn-o btn-sm",style:{marginRight:"4px"}},["✏️"]);eb.onclick=()=>showWorkerModal(w,i,(updated)=>{const ws=getWrks();ws[i]={...ws[i],...updated};saveWrks(ws);syncWorkers(ws);toast("Засагдлаа ✓");render();});
+            const db=el("button",{className:"btn btn-d btn-sm"},["🚫"]);db.onclick=()=>{if(!confirm(`"${w.name}" хасах уу?`))return;addToBlacklist(w);const ws=getWrks();ws.splice(i,1);saveWrks(ws);syncWorkers(ws);toast(`"${w.name}" хасагдлаа`,"info");render();};
+            const actWrap=h("div",{style:{display:"flex",gap:"4px"}});actWrap.appendChild(hb);actWrap.appendChild(eb);actWrap.appendChild(db);row.appendChild(actWrap);wc.appendChild(row);
+          });
+        });
+      }
+      body.appendChild(wc);
+      const blacklist=getBlacklist();const blCard=el("div",{className:"card fadeUp",style:{marginTop:"8px",borderColor:"#fca5a5"}});blCard.appendChild(h("div",{style:{fontFamily:"'DM Serif Display',serif",fontSize:"14px",color:"#c0392b",marginBottom:"10px"}},["🚫 Хасагдсан ажилтнууд ("+blacklist.length+")"]));
+      if(!blacklist.length)blCard.appendChild(h("div",{style:{color:"var(--mut)",fontSize:"12px",padding:"8px 0",textAlign:"center"}},["Хасагдсан ажилтан байхгүй"]));
+      else{blacklist.forEach((b,bi)=>{const row=el("div",{style:{display:"flex",alignItems:"center",gap:"8px",padding:"8px",background:"#fef2f2",borderRadius:"10px",marginBottom:"6px",border:"1px solid #fca5a5"}});const hoursLeft=b.deletedTs?Math.max(0,Math.ceil((72*60*60*1000-(Date.now()-b.deletedTs))/(60*60*1000))):72;row.appendChild(el("div",{className:"w-av",style:{background:"linear-gradient(135deg,#c0392b,#922b21)"}},[initials(b.name)]));row.appendChild(h("div",{style:{flex:"1"}},[h("div",{className:"w-name",style:{color:"#c0392b"}},[b.name]),h("div",{className:"w-sub"},[b.department+(b.deletedAt?" · "+b.deletedAt:"")+( hoursLeft>0?" · 🕐 "+hoursLeft+"ц":"")] )]));const rb=el("button",{className:"btn btn-o btn-sm",style:{marginLeft:"6px",color:"var(--g)",borderColor:"var(--g)"}},["↩ Сэргээх"]);rb.onclick=()=>{if(!confirm(`"${b.name}" сэргээх үү?`))return;removeFromBlacklist(b.name);const ws=getWrks();if(!ws.find(w=>normName(w.name)===normName(b.name))){ws.push({name:b.name,department:b.department||"",position:b.position||"",phone:""});saveWrks(ws);syncWorkers(ws);}toast(`"${b.name}" сэргээгдлээ ✓`);render();};row.appendChild(rb);blCard.appendChild(row);});}
+      body.appendChild(blCard);
+    }
+    else if(tab==="guide"){buildGuideTab(body);}
+    else if(tab==="settings"){buildSettingsTab(body);}
+    page.appendChild(body);return page;
+  }
+
+  // ════════════════════════════════════════════════════════════
+  // 🔧 ЗААВАР ТАБ
+  // ════════════════════════════════════════════════════════════
+  function buildGuideTab(body){
+    body.appendChild(h("div",{style:{fontFamily:"'DM Serif Display',serif",fontSize:"18px",color:"var(--g)",marginBottom:"4px"}},["🔧 Тохиргоо & Заавар"]));
+    body.appendChild(h("div",{style:{fontSize:"12px",color:"var(--mut)",marginBottom:"16px"}},["Анх удаа тохируулах алхам алхмаар заавар"]));
+    // Байрлал
+    const locCard=el("div",{className:"loc-card fadeUp"});locCard.appendChild(h("div",{className:"loc-icon"},["📍"]));
+    const li=el("div",{className:"loc-info"});li.appendChild(h("h4",{},[ORG_LOCATION.name]));li.appendChild(h("p",{},[ORG_LOCATION.address]));li.appendChild(el("a",{href:ORG_LOCATION.mapsUrl,target:"_blank"},["🗺️ Google Maps-т нээх →"]));
+    locCard.appendChild(li);body.appendChild(locCard);
+    // Цаг
+    const ubP=_getUBDate();
+    const timeCard=el("div",{className:"time-info-card fadeUp"});
+    timeCard.innerHTML=`🕐 <strong>Одоогийн УБ цаг: ${ubP.hour}:${ubP.minute}</strong> (${ubP.year}.${ubP.month}.${ubP.day})<br>Энэ апп <strong>Улаанбаатарын цагийн бүс (UTC+8)</strong> ашиглана. Бүртгэлт, тайлан дахь бүх цаг УБ цагаар харагдана.`;
+    body.appendChild(timeCard);
+    // Step 1
+    const s1=el("div",{className:"guide-step fadeUp"});s1.appendChild(h("div",{className:"guide-step-head"},[h("div",{className:"guide-step-num"},["1"]),h("div",{className:"guide-step-title"},["Google Sheets үүсгэх"])]));
+    s1.appendChild(h("p",{},[`sheets.google.com рүү орж шинэ хүснэгт үүсгэнэ үү. URL-ийн дундах ID-г хуулна уу.`]));
+    const cb1=el("div",{className:"code-block"});cb1.textContent="https://docs.google.com/spreadsheets/d/SPREADSHEET_ID_ЭНИЙГ_ХУУЛНА/edit";const cpb1=el("button",{className:"copy-btn"},["Хуулах"]);cpb1.onclick=()=>navigator.clipboard.writeText("https://docs.google.com/spreadsheets/d/SPREADSHEET_ID/edit").then(()=>toast("✓")).catch(()=>{});cb1.appendChild(cpb1);s1.appendChild(cb1);body.appendChild(s1);
+    // Step 2 — Apps Script
+    const GAS_CODE=`const SPREADSHEET_ID = "ТА_ЭНИЙГ_СОЛИНО";
+
+function doPost(e) {
+  try {
+    const data = JSON.parse(e.postData.contents);
+    const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+    if (data.action === "addRecord") {
+      let sheet = ss.getSheetByName("Бүртгэл");
+      if (!sheet) {
+        sheet = ss.insertSheet("Бүртгэл");
+        sheet.appendRow(["Огноо","Цаг (УБ)","Нэр","Тасаг","Тушаал","Утас","Шалгалт","Зааварчилгаа"]);
+      }
+      const ubTime = Utilities.formatDate(new Date(), "Asia/Ulaanbaatar", "HH:mm");
+      sheet.appendRow([
+        data.date || Utilities.formatDate(new Date(), "Asia/Ulaanbaatar", "yyyy.MM.dd"),
+        data.time || ubTime,
+        data.name || "", data.department || "", data.position || "",
+        data.phone || "", data.passed || "", data.instrRead || ""
+      ]);
+      return ContentService.createTextOutput(JSON.stringify({ok:true}))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+    if (data.action === "syncWorkers") {
+      let sheet = ss.getSheetByName("Ажилтнууд");
+      if (!sheet) sheet = ss.insertSheet("Ажилтнууд");
+      sheet.clearContents();
+      sheet.appendRow(["Нэр","Тасаг","Тушаал","Утас"]);
+      (data.workers || []).forEach(w =>
+        sheet.appendRow([w.name||"", w.department||"", w.position||"", w.phone||""])
+      );
+      return ContentService.createTextOutput(JSON.stringify({ok:true}))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+    return ContentService.createTextOutput(JSON.stringify({ok:false}))
+      .setMimeType(ContentService.MimeType.JSON);
+  } catch(err) {
+    return ContentService.createTextOutput(JSON.stringify({ok:false,error:err.toString()}))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+}
+
+function doGet(e) {
+  try {
+    const action = e.parameter.action;
+    const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+    if (action === "getToday") {
+      const date = e.parameter.date;
+      const sheet = ss.getSheetByName("Бүртгэл");
+      if (!sheet) return ok([], "records");
+      const rows = sheet.getDataRange().getValues();
+      const records = rows.slice(1).filter(r => String(r[0]) === date).map(r => ({
+        date:String(r[0]), time:String(r[1]), name:String(r[2]),
+        department:String(r[3]), position:String(r[4]),
+        phone:String(r[5]), passed:String(r[6])==="Тэнцсэн", instrRead:String(r[7])==="Тийм"
+      }));
+      return ok(records, "records");
+    }
+    if (action === "getWorkers") {
+      const sheet = ss.getSheetByName("Ажилтнууд");
+      if (!sheet) return ok([], "workers");
+      const rows = sheet.getDataRange().getValues();
+      const workers = rows.slice(1).filter(r => r[0]).map(r => ({
+        name:String(r[0]), department:String(r[1]), position:String(r[2]), phone:String(r[3])
+      }));
+      return ok(workers, "workers");
+    }
+    return ContentService.createTextOutput(JSON.stringify({ok:false}))
+      .setMimeType(ContentService.MimeType.JSON);
+  } catch(err) {
+    return ContentService.createTextOutput(JSON.stringify({ok:false,error:err.toString()}))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+}
+function ok(data, key) {
+  const obj = {ok:true}; if(key) obj[key]=data; else obj.records=data;
+  return ContentService.createTextOutput(JSON.stringify(obj)).setMimeType(ContentService.MimeType.JSON);
+}`;
+    const s2=el("div",{className:"guide-step fadeUp"});s2.appendChild(h("div",{className:"guide-step-head"},[h("div",{className:"guide-step-num"},["2"]),h("div",{className:"guide-step-title"},["Google Apps Script тохируулах"])]));
+    s2.appendChild(h("p",{},[`Sheets → Extensions → Apps Script → доорх кодыг буулгана уу.`]));
+    const cb2=el("div",{className:"code-block",style:{maxHeight:"280px",overflowY:"auto",fontSize:"10px"}});cb2.textContent=GAS_CODE;const cpb2=el("button",{className:"copy-btn"},["Хуулах"]);cpb2.onclick=()=>navigator.clipboard.writeText(GAS_CODE).then(()=>toast("Apps Script код хуулагдлаа ✓")).catch(()=>{});cb2.appendChild(cpb2);s2.appendChild(cb2);
+    s2.appendChild(h("ol",{style:{marginTop:"10px"}},[
+      h("li",{},["Deploy → New deployment → Web app"]),
+      h("li",{},["Execute as: Me · Who has access: Anyone"]),
+      h("li",{},["Deploy дарж URL-ийг SCRIPT_URL тохиргоонд оруулна"])
+    ]));
+    body.appendChild(s2);
+    // Step 3: HTML config
+    const s3=el("div",{className:"guide-step fadeUp"});s3.appendChild(h("div",{className:"guide-step-head"},[h("div",{className:"guide-step-num"},["3"]),h("div",{className:"guide-step-title"},["HTML CONFIG солих"])]));
+    const cb3=el("div",{className:"code-block",style:{fontSize:"10px"}});
+    cb3.textContent=`const SCRIPT_URL = "APPS_SCRIPT_DEPLOY_URL";\nconst SHEET_URL  = "SPREADSHEET_URL";\nconst APP_URL    = "GITHUB_PAGES_URL";\nconst ORG_NAME   = "БАЙГУУЛЛАГЫН НЭР";\nconst DEFAULT_PIN = "1234";\nconst DEPTS = ["1-р тасаг", "Захиргаа", ...];`;
+    s3.appendChild(cb3);body.appendChild(s3);
+    // Step 4: GitHub
+    const s4=el("div",{className:"guide-step fadeUp"});s4.appendChild(h("div",{className:"guide-step-head"},[h("div",{className:"guide-step-num"},["4"]),h("div",{className:"guide-step-title"},["GitHub Pages-т байрлуулах"])]));
+    s4.appendChild(h("ol",{},[h("li",{},["github.com → New repository (public)"]),h("li",{},["HTML файлыг index.html нэрээр upload хийнэ"]),h("li",{},["Settings → Pages → Deploy from branch: main"]),h("li",{},["URL-ийг APP_URL-д оруулж дахин upload хийнэ"])]));
+    body.appendChild(s4);
+    // Step 5: PIN
+    const s5=el("div",{className:"guide-step fadeUp"});s5.appendChild(h("div",{className:"guide-step-head"},[h("div",{className:"guide-step-num"},["5"]),h("div",{className:"guide-step-title"},["Анхны PIN солих ("+DEFAULT_PIN+")"])]));
+    s5.appendChild(h("p",{},[`Менежерийн хяналт → ⚙️ Тохиргоо → PIN код солих`]));body.appendChild(s5);
+    // Links
+    const linksCard=el("div",{className:"guide-step fadeUp",style:{background:"var(--gp)"}});linksCard.appendChild(h("div",{className:"guide-step-head"},[h("div",{className:"guide-step-num"},["🔗"]),h("div",{className:"guide-step-title"},["Хурдан холбоосууд"])]));
+    [{label:"📊 Google Sheets нээх",url:SHEET_URL,highlight:true},{label:"📡 Apps Script",url:"https://script.google.com"},{label:"🌐 GitHub Pages",url:"https://pages.github.com"}].forEach(lnk=>{
+      linksCard.appendChild(el("a",{href:lnk.url,target:"_blank",style:{display:"block",padding:"10px 12px",background:lnk.highlight?"var(--g)":"var(--wh)",color:lnk.highlight?"#fff":"var(--g)",borderRadius:"10px",fontSize:"13px",fontWeight:"700",textDecoration:"none",marginBottom:"6px",border:"1.5px solid var(--bdr)"}},[lnk.label]));
+    });body.appendChild(linksCard);
+  }
+
+  // ════════════════════════════════════════════════════════════
+  // ⚙️ ТОХИРГОО ТАБ
+  // ════════════════════════════════════════════════════════════
+  function buildSettingsTab(body){
+    const sc=el("div",{className:"card fadeUp"});sc.appendChild(h("div",{className:"card-head"},["⚙️ Тохиргоо"]));
+    // PIN
+    sc.appendChild(h("div",{style:{fontSize:"13px",fontWeight:"700",marginBottom:"6px"}},["PIN код солих"]));
+    const pi=el("input",{className:"inp",type:"password",maxlength:"4",placeholder:"Шинэ PIN (4 тоо)",style:{marginBottom:"8px"}});
+    const pb=el("button",{className:"btn btn-p btn-sm"},["Хадгалах"]);pb.onclick=async()=>{if(pi.value.length<4)return toast("4 оронтой PIN оруулна уу","err");await savePin(pi.value);toast("PIN солигдлоо ✓");pi.value="";};
+    const prb=el("button",{className:"btn btn-o btn-sm",style:{marginTop:"6px",marginBottom:"4px"}},["🔑 PIN reset → "+DEFAULT_PIN]);prb.onclick=async()=>{if(confirm("PIN-г "+DEFAULT_PIN+" болгох уу?")){await savePin(DEFAULT_PIN);toast("PIN reset хийгдлээ","info");}};
+    sc.appendChild(pi);sc.appendChild(pb);sc.appendChild(prb);
+    // Менежерийн г/ү
+    sc.appendChild(h("div",{style:{height:"1px",background:"var(--bdr)",margin:"16px 0"}}));
+    sc.appendChild(h("div",{style:{fontSize:"13px",fontWeight:"700",marginBottom:"6px"}},["✍️ Менежерийн гарын үсэг"]));
+    const MGR_KEY="habea_mgr_sig_v1";const mgrState=lsGet(MGR_KEY)||null;
+    const mgrPrev=el("div",{style:{marginBottom:"10px"}});
+    if(mgrState&&mgrState.sig){mgrPrev.appendChild(h("div",{style:{fontSize:"11px",color:"var(--g)",fontWeight:"700",marginBottom:"4px"}},["✅ Хадгалагдсан: "+(mgrState.name||"Менежер")]));mgrPrev.appendChild(el("img",{src:mgrState.sig,style:{border:"1.5px solid var(--bdr)",borderRadius:"10px",maxWidth:"200px",height:"60px",objectFit:"contain",display:"block"}}));}
+    else mgrPrev.appendChild(h("div",{style:{fontSize:"11px",color:"var(--mut)"}},"Гарын үсэг тохируулаагүй байна"));
+    sc.appendChild(mgrPrev);
+    const mgrNm=el("input",{className:"inp",type:"text",placeholder:"Менежерийн нэр",style:{marginBottom:"8px"},value:(mgrState&&mgrState.name)||""});sc.appendChild(h("div",{className:"inp-label"},["Менежерийн нэр"]));sc.appendChild(mgrNm);
+    sc.appendChild(h("div",{className:"inp-label"},["Гарын үсэг"]));
+    const mgrOuter=el("div",{style:{border:"2px dashed var(--bdr)",borderRadius:"12px",background:"#fff",position:"relative",overflow:"hidden",cursor:"crosshair",height:"120px",marginBottom:"8px"}});
+    const mgrCv=el("canvas",{style:{display:"block",width:"100%",height:"120px",background:"#fff"}});const mgrHint=h("div",{style:{position:"absolute",inset:"0",display:"flex",alignItems:"center",justifyContent:"center",color:"var(--mut)",fontSize:"13px",pointerEvents:"none"}},["✍️ Энд гарын үсгээ зурна уу"]);const mgrClr=el("button",{style:{position:"absolute",top:"6px",right:"6px",background:"rgba(231,76,60,.85)",color:"#fff",border:"none",borderRadius:"6px",padding:"3px 8px",fontSize:"11px",cursor:"pointer",fontFamily:"inherit"}},["Арилгах"]);mgrOuter.appendChild(mgrCv);mgrOuter.appendChild(mgrHint);mgrOuter.appendChild(mgrClr);sc.appendChild(mgrOuter);
+    let mCtx,mDrg=false,mDrwn=false;
+    function initMgrCv(){const w=mgrOuter.offsetWidth||300;if(!w){requestAnimationFrame(initMgrCv);return;}mgrCv.width=w;mgrCv.height=120;mCtx=mgrCv.getContext("2d");mCtx.fillStyle="#fff";mCtx.fillRect(0,0,mgrCv.width,mgrCv.height);mCtx.strokeStyle="#1a2040";mCtx.lineWidth=2.5;mCtx.lineCap="round";mCtx.lineJoin="round";if(mgrState&&mgrState.sig){const img=new Image();img.onload=()=>mCtx.drawImage(img,0,0,mgrCv.width,mgrCv.height);img.src=mgrState.sig;mgrHint.style.opacity="0";mDrwn=true;}}
+    requestAnimationFrame(initMgrCv);
+    function mPos(e){const r=mgrCv.getBoundingClientRect();const t=e.touches?e.touches[0]:e;return[(t.clientX-r.left)*(mgrCv.width/r.width),(t.clientY-r.top)*(mgrCv.height/r.height)];}
+    mgrCv.addEventListener("mousedown",e=>{if(!mCtx)return;mDrg=true;const[x,y]=mPos(e);mCtx.beginPath();mCtx.moveTo(x,y);});mgrCv.addEventListener("mousemove",e=>{if(!mDrg||!mCtx)return;mDrwn=true;mgrHint.style.opacity="0";const[x,y]=mPos(e);mCtx.lineTo(x,y);mCtx.stroke();});mgrCv.addEventListener("mouseup",()=>{mDrg=false;});mgrCv.addEventListener("mouseleave",()=>{mDrg=false;});mgrCv.addEventListener("touchstart",e=>{e.preventDefault();if(!mCtx)return;mDrg=true;const[x,y]=mPos(e);mCtx.beginPath();mCtx.moveTo(x,y);},{passive:false});mgrCv.addEventListener("touchmove",e=>{e.preventDefault();if(!mDrg||!mCtx)return;mDrwn=true;mgrHint.style.opacity="0";const[x,y]=mPos(e);mCtx.lineTo(x,y);mCtx.stroke();},{passive:false});mgrCv.addEventListener("touchend",()=>{mDrg=false;});
+    mgrClr.onclick=()=>{if(!mCtx)return;mCtx.clearRect(0,0,mgrCv.width,mgrCv.height);mgrHint.style.opacity="1";mDrwn=false;};
+    const mgrSave=el("button",{className:"btn btn-p btn-sm",style:{marginBottom:"4px"}},["💾 Менежерийн гарын үсэг хадгалах"]);
+    mgrSave.onclick=()=>{if(!mDrwn)return toast("Гарын үсгээ зурна уу","err");const tc=document.createElement("canvas");tc.width=mgrCv.width;tc.height=mgrCv.height;const tx=tc.getContext("2d");tx.fillStyle="#fff";tx.fillRect(0,0,tc.width,tc.height);tx.drawImage(mgrCv,0,0);const sig=tc.toDataURL("image/jpeg",0.9);const name=mgrNm.value.trim()||"Менежер";lsSet(MGR_KEY,{sig,name,savedAt:toDay()});toast("Хадгалагдлаа ✓");render();};
+    const mgrDel=el("button",{className:"btn btn-o btn-sm",style:{marginTop:"4px"}},["🗑️ Устгах"]);mgrDel.onclick=()=>{if(!confirm("Устгах уу?"))return;localStorage.removeItem(MGR_KEY);toast("Устгагдлаа","info");render();};
+    sc.appendChild(mgrSave);sc.appendChild(mgrDel);
+    // Checklist
+    const cfg=getCfg();
+    sc.appendChild(h("div",{style:{fontSize:"13px",fontWeight:"700",margin:"16px 0 6px"}},["✅ Шалгах хуудас засах"]));
+    const clWrap=el("div",{style:{background:"var(--gp)",borderRadius:"12px",padding:"12px",marginBottom:"8px"}});
+    const activeCL=lsGet("habea_checklist_v1")||CHECKLIST;
+    activeCL.forEach((grp,gi)=>{clWrap.appendChild(h("div",{style:{fontSize:"11px",fontWeight:"700",color:"var(--mut)",letterSpacing:".06em",textTransform:"uppercase",margin:"8px 0 4px"}},[grp.cat]));grp.items.forEach((item,ii)=>{const ir=el("div",{style:{display:"flex",gap:"6px",alignItems:"center",marginBottom:"4px"}});const it=el("input",{className:"inp",type:"text",style:{fontSize:"12px",padding:"7px 10px"}});it.value=item;it.dataset.gi=gi;it.dataset.ii=ii;const idb=el("button",{className:"btn btn-d btn-sm"},["✕"]);idb.onclick=()=>ir.remove();ir.appendChild(it);ir.appendChild(idb);clWrap.appendChild(ir);});const addItem=el("button",{className:"btn btn-o btn-sm",style:{fontSize:"11px",marginBottom:"4px"}},["+ Зүйл нэмэх"]);addItem.onclick=()=>{const ir=el("div",{style:{display:"flex",gap:"6px",alignItems:"center",marginBottom:"4px"}});const it=el("input",{className:"inp",type:"text",style:{fontSize:"12px",padding:"7px 10px"},placeholder:"Шинэ зүйл..."});it.dataset.gi=gi;it.dataset.ii=999;const idb=el("button",{className:"btn btn-d btn-sm"},["✕"]);idb.onclick=()=>ir.remove();ir.appendChild(it);ir.appendChild(idb);clWrap.insertBefore(ir,addItem);setTimeout(()=>it.focus(),50);};clWrap.appendChild(addItem);});
+    sc.appendChild(clWrap);
+    const saveCL=el("button",{className:"btn btn-p btn-sm",style:{marginBottom:"4px"}},["💾 Шалгах хуудас хадгалах"]);saveCL.onclick=()=>{const inputs=clWrap.querySelectorAll("input[type=text]");const newCL=[];activeCL.forEach((grp,gi)=>{const items=[];inputs.forEach(inp=>{if(parseInt(inp.dataset.gi)===gi&&inp.value.trim())items.push(inp.value.trim());});if(items.length)newCL.push({cat:grp.cat,items});});if(!newCL.length)return toast("Хоосон байна","err");lsSet("habea_checklist_v1",newCL);toast("Хадгалагдлаа ✓");};const rstCL=el("button",{className:"btn btn-o btn-sm"},["↩ Анхны"]);rstCL.onclick=()=>{if(confirm("Сэргээх үү?")){lsSet("habea_checklist_v1",null);toast("Сэргээгдлээ ✓");render();}};sc.appendChild(saveCL);sc.appendChild(rstCL);
+    // Pass pct
+    sc.appendChild(h("div",{style:{fontSize:"13px",fontWeight:"700",margin:"16px 0 6px"}},["Тэнцэх босго"]));
+    const rw=el("div",{className:"range-wrap"});const rl=el("span",{className:"range-lbl"},[(cfg.passPct||DEFAULT_PASS_PCT)+"%"]);const ri=el("input",{type:"range",min:"50",max:"100",value:String(cfg.passPct||DEFAULT_PASS_PCT)});ri.oninput=()=>{rl.textContent=ri.value+"%";};const rs=el("button",{className:"btn btn-p btn-sm"},["Хадгалах"]);rs.onclick=()=>{saveCfg({...getCfg(),passPct:parseInt(ri.value)});toast("Хадгалагдлаа ✓");render();};rw.appendChild(ri);rw.appendChild(rl);sc.appendChild(rw);sc.appendChild(rs);
+    // Reg time
+    sc.appendChild(h("div",{style:{fontSize:"13px",fontWeight:"700",margin:"16px 0 6px"}},["⏰ Бүртгэлт цагийн хязгаар"]));
+    const rRow=el("div",{style:{display:"flex",gap:"8px",alignItems:"center",flexWrap:"wrap",marginBottom:"8px"}});
+    const riS=el("input",{className:"inp",type:"time",style:{maxWidth:"110px"},value:cfg.regStart||"07:30"});const riE=el("input",{className:"inp",type:"time",style:{maxWidth:"110px"},value:cfg.regEnd||"09:30"});
+    const rSave=el("button",{className:"btn btn-p btn-sm"},["Хадгалах"]);rSave.onclick=()=>{saveCfg({...getCfg(),regStart:riS.value,regEnd:riE.value});toast("Хадгалагдлаа ✓");};
+    const rOff=el("button",{className:"btn btn-o btn-sm"},["Хязгаар арилгах"]);rOff.onclick=()=>{const c=getCfg();delete c.regStart;delete c.regEnd;saveCfg(c);toast("Арилгагдлаа");render();};
+    rRow.appendChild(h("div",{style:{fontSize:"12px",color:"var(--mut)"}},["Эхлэх:"]));rRow.appendChild(riS);rRow.appendChild(h("div",{style:{fontSize:"12px",color:"var(--mut)"}},["Дуусах:"]));rRow.appendChild(riE);sc.appendChild(rRow);sc.appendChild(rSave);sc.appendChild(rOff);
+    // Instructions
+    sc.appendChild(h("div",{style:{fontSize:"13px",fontWeight:"700",margin:"16px 0 6px"}},["📋 Зааварчилгаа засах"]));
+    const instrList=getInstructions()||INSTRUCTIONS;const instrWrap=el("div",{style:{display:"flex",flexDirection:"column",gap:"6px",marginBottom:"8px"}});const instrTAs=[];
+    function addInstrRow(txt){const row=el("div",{style:{display:"flex",gap:"6px",alignItems:"flex-start"}});const num=el("div",{style:{width:"22px",height:"22px",background:"var(--g)",color:"#fff",borderRadius:"50%",fontSize:"11px",fontWeight:"700",flexShrink:"0",display:"flex",alignItems:"center",justifyContent:"center",marginTop:"10px"}});num.textContent=String(instrTAs.length+1);const ta=el("div",{style:{flex:"1"}});ta.contentEditable="true";ta.className="inp";Object.assign(ta.style,{minHeight:"48px",fontSize:"12px",lineHeight:"1.5",whiteSpace:"pre-wrap",cursor:"text"});ta.textContent=txt||"";const db=el("button",{className:"btn btn-d btn-sm",style:{flexShrink:"0",marginTop:"6px"}},["✕"]);instrTAs.push(ta);db.onclick=()=>{row.remove();const i=instrTAs.indexOf(ta);if(i>-1)instrTAs.splice(i,1);};row.appendChild(num);row.appendChild(ta);row.appendChild(db);instrWrap.appendChild(row);}
+    instrList.forEach(t=>addInstrRow(t));sc.appendChild(instrWrap);
+    const addInstrBtn=el("button",{className:"btn btn-o btn-sm",style:{marginBottom:"8px"}},["+ Нэмэх"]);addInstrBtn.onclick=()=>addInstrRow("");sc.appendChild(addInstrBtn);
+    const saveInstrBtn=el("button",{className:"btn btn-p btn-sm",style:{marginBottom:"4px"}},["💾 Хадгалах"]);saveInstrBtn.onclick=()=>{const vals=instrTAs.map(t=>(t.textContent||"").trim()).filter(t=>t.length>0);if(!vals.length)return toast("Дор хаяж 1 оруулна уу","err");saveInstructions(vals);toast("Хадгалагдлаа ✓");};const rstInstrBtn=el("button",{className:"btn btn-o btn-sm"},["↩ Анхны"]);rstInstrBtn.onclick=()=>{if(confirm("Сэргээх үү?")){saveInstructions(null);toast("Сэргээгдлээ ✓");render();}};sc.appendChild(saveInstrBtn);sc.appendChild(rstInstrBtn);
+    // Backup
+    sc.appendChild(h("div",{style:{fontSize:"13px",fontWeight:"700",margin:"16px 0 6px"}},["💾 Backup & Restore"]));
+    const bRow=el("div",{style:{display:"flex",gap:"8px",flexWrap:"wrap",marginBottom:"8px"}});
+    const bBtn=el("button",{className:"btn btn-o btn-sm"},["⬇️ Backup татах"]);bBtn.onclick=()=>{const data={version:3,date:toDay(),records:getRecs(),workers:getWrks(),blacklist:getBlacklist(),cfg:getCfg(),instructions:getInstructions(),checklist:lsGet("habea_checklist_v1")};const blob=new Blob([JSON.stringify(data,null,2)],{type:"application/json"});const url=URL.createObjectURL(blob);const a=document.createElement("a");a.href=url;a.download="ХАБЭА_backup_"+toDay()+".json";a.click();URL.revokeObjectURL(url);toast("Backup татагдлаа ✓");};
+    const rBtn=el("button",{className:"btn btn-o btn-sm"},["⬆️ Restore"]);rBtn.onclick=()=>{const inp=document.createElement("input");inp.type="file";inp.accept=".json";inp.onchange=e=>{const file=e.target.files[0];if(!file)return;const reader=new FileReader();reader.onload=ev=>{try{const d=JSON.parse(ev.target.result);if(!d.version||!d.records)return toast("Файл буруу формат","err");if(!confirm("Одоогийн өгөгдлийг солих уу?"))return;saveRecs(d.records||[]);saveWrks(d.workers||[]);if(d.blacklist)saveBlacklist(d.blacklist);if(d.cfg)saveCfg(d.cfg);if(d.instructions)saveInstructions(d.instructions);if(d.checklist)lsSet("habea_checklist_v1",d.checklist);toast("Restore амжилттай! "+(d.records||[]).length+" бүртгэл сэргээгдлээ ✓");render();}catch(e){toast("Файл уншихад алдаа","err");}};reader.readAsText(file);};inp.click();};
+    bRow.appendChild(bBtn);bRow.appendChild(rBtn);sc.appendChild(bRow);
+    // Clear
+    sc.appendChild(h("div",{style:{fontSize:"13px",fontWeight:"700",margin:"16px 0 6px"}},["🗑️ Бүртгэл устгах"]));
+    const cBtn=el("button",{className:"btn btn-d btn-sm"},["Бүртгэл устгах"]);cBtn.onclick=()=>{if(confirm("Бүх бүртгэл устгах уу?")){saveRecs([]);toast("Устгагдлаа","info");render();}};sc.appendChild(cBtn);
+    body.appendChild(sc);
+  }
+
+  render();
+}
+
+renderHome();
+</script>
+</body>
+</html>
