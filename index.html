@@ -105,23 +105,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--gp);color:var(--ink);min-
 .range-wrap input[type=range]{flex:1;accent-color:var(--g);}
 .range-lbl{font-size:13px;font-weight:700;color:var(--g);min-width:36px;text-align:right;}
 .w-row-blocked{background:#fef2f2;border-radius:10px;padding:10px;margin-bottom:4px;}
-.guide-step{background:var(--wh);border:1px solid var(--bdr);border-radius:14px;padding:16px;margin-bottom:10px;}
-.guide-step-head{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
-.guide-step-num{width:28px;height:28px;background:linear-gradient(135deg,var(--g),var(--gd));color:#fff;border-radius:50%;font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
-.guide-step-title{font-family:'DM Serif Display',serif;font-size:14px;color:var(--g);}
-.guide-step p{font-size:12px;color:var(--mut);line-height:1.65;margin-bottom:8px;}
-.guide-step ol,.guide-step ul{font-size:12px;color:var(--mut);line-height:1.65;padding-left:18px;margin-bottom:8px;}
-.guide-step li{margin-bottom:3px;}
-.code-block{background:#0d1117;color:#58a6ff;border-radius:10px;padding:12px 14px;font-family:monospace;font-size:11px;line-height:1.6;overflow-x:auto;position:relative;margin:8px 0;white-space:pre;}
-.copy-btn{position:absolute;top:6px;right:8px;background:rgba(88,166,255,.15);color:#58a6ff;border:1px solid rgba(88,166,255,.3);border-radius:6px;padding:3px 10px;font-size:10px;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:700;}
-.copy-btn:hover{background:rgba(88,166,255,.25);}
-.loc-card{background:linear-gradient(135deg,var(--gp),var(--gm));border:1.5px solid var(--bdr);border-radius:14px;padding:14px;margin-bottom:10px;display:flex;align-items:flex-start;gap:12px;}
-.loc-icon{font-size:28px;flex-shrink:0;}
-.loc-info h4{font-size:13px;font-weight:700;color:var(--g);margin-bottom:3px;}
-.loc-info p{font-size:11px;color:var(--mut);line-height:1.55;}
-.loc-info a{color:var(--g);font-weight:700;font-size:12px;text-decoration:none;}
-.time-info-card{background:#fffbeb;border:1.5px solid #f59e0b;border-radius:12px;padding:12px 14px;margin-bottom:10px;font-size:12px;color:#92400e;line-height:1.65;}
-.time-info-card strong{color:#d35400;}
 .rpt-header{background:linear-gradient(135deg,var(--gd) 0%,var(--g) 60%,#1e5aaa 100%);padding:20px 16px 16px;border-radius:16px;margin-bottom:14px;position:relative;overflow:hidden;}
 .rpt-chip{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);border-radius:20px;padding:5px 12px;color:#fff;font-size:11px;font-weight:600;display:inline-flex;align-items:center;gap:4px;}
 .rpt-chip span{color:var(--gl);font-weight:700;}
@@ -826,7 +809,7 @@ function renderManager(onLogout){
     const todayRecs=recs.filter(r=>r.date===toDay());
     const signedSet=new Set(todayRecs.map(r=>normName(r.name)));
     const unsigned=workers.filter(w=>!signedSet.has(normName(w.name)));
-    const TABS=[{id:"dashboard",l:"🏠 Хянах"},{id:"today",l:"📊 Өнөөдөр"},{id:"report",l:"📋 Тайлан"},{id:"workers",l:"👥 Ажилтан"},{id:"guide",l:"🔧 Заавар"},{id:"settings",l:"⚙️ Тохиргоо"}];
+    const TABS=[{id:"dashboard",l:"🏠 Хянах"},{id:"today",l:"📊 Өнөөдөр"},{id:"report",l:"📋 Тайлан"},{id:"workers",l:"👥 Ажилтан"},{id:"settings",l:"⚙️ Тохиргоо"}];
     const page=el("div",{className:"page"});
     const hdr=el("div",{className:"mgr-hdr"});
     const ht=h("div",{style:{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:"10px"}});
@@ -903,134 +886,8 @@ function renderManager(onLogout){
       else{blacklist.forEach((b,bi)=>{const row=el("div",{style:{display:"flex",alignItems:"center",gap:"8px",padding:"8px",background:"#fef2f2",borderRadius:"10px",marginBottom:"6px",border:"1px solid #fca5a5"}});const hoursLeft=b.deletedTs?Math.max(0,Math.ceil((72*60*60*1000-(Date.now()-b.deletedTs))/(60*60*1000))):72;row.appendChild(el("div",{className:"w-av",style:{background:"linear-gradient(135deg,#c0392b,#922b21)"}},[initials(b.name)]));row.appendChild(h("div",{style:{flex:"1"}},[h("div",{className:"w-name",style:{color:"#c0392b"}},[b.name]),h("div",{className:"w-sub"},[b.department+(b.deletedAt?" · "+b.deletedAt:"")+( hoursLeft>0?" · 🕐 "+hoursLeft+"ц":"")] )]));const rb=el("button",{className:"btn btn-o btn-sm",style:{marginLeft:"6px",color:"var(--g)",borderColor:"var(--g)"}},["↩ Сэргээх"]);rb.onclick=()=>{if(!confirm(`"${b.name}" сэргээх үү?`))return;removeFromBlacklist(b.name);const ws=getWrks();if(!ws.find(w=>normName(w.name)===normName(b.name))){ws.push({name:b.name,department:b.department||"",position:b.position||"",phone:""});saveWrks(ws);syncWorkers(ws);}toast(`"${b.name}" сэргээгдлээ ✓`);render();};row.appendChild(rb);blCard.appendChild(row);});}
       body.appendChild(blCard);
     }
-    else if(tab==="guide"){buildGuideTab(body);}
     else if(tab==="settings"){buildSettingsTab(body);}
     page.appendChild(body);return page;
-  }
-
-  // ════════════════════════════════════════════════════════════
-  // 🔧 ЗААВАР ТАБ
-  // ════════════════════════════════════════════════════════════
-  function buildGuideTab(body){
-    body.appendChild(h("div",{style:{fontFamily:"'DM Serif Display',serif",fontSize:"18px",color:"var(--g)",marginBottom:"4px"}},["🔧 Тохиргоо & Заавар"]));
-    body.appendChild(h("div",{style:{fontSize:"12px",color:"var(--mut)",marginBottom:"16px"}},["Анх удаа тохируулах алхам алхмаар заавар"]));
-    // Байрлал
-    const locCard=el("div",{className:"loc-card fadeUp"});locCard.appendChild(h("div",{className:"loc-icon"},["📍"]));
-    const li=el("div",{className:"loc-info"});li.appendChild(h("h4",{},[ORG_LOCATION.name]));li.appendChild(h("p",{},[ORG_LOCATION.address]));li.appendChild(el("a",{href:ORG_LOCATION.mapsUrl,target:"_blank"},["🗺️ Google Maps-т нээх →"]));
-    locCard.appendChild(li);body.appendChild(locCard);
-    // Цаг
-    const ubP=_getUBDate();
-    const timeCard=el("div",{className:"time-info-card fadeUp"});
-    timeCard.innerHTML=`🕐 <strong>Одоогийн УБ цаг: ${ubP.hour}:${ubP.minute}</strong> (${ubP.year}.${ubP.month}.${ubP.day})<br>Энэ апп <strong>Улаанбаатарын цагийн бүс (UTC+8)</strong> ашиглана. Бүртгэлт, тайлан дахь бүх цаг УБ цагаар харагдана.`;
-    body.appendChild(timeCard);
-    // Step 1
-    const s1=el("div",{className:"guide-step fadeUp"});s1.appendChild(h("div",{className:"guide-step-head"},[h("div",{className:"guide-step-num"},["1"]),h("div",{className:"guide-step-title"},["Google Sheets үүсгэх"])]));
-    s1.appendChild(h("p",{},[`sheets.google.com рүү орж шинэ хүснэгт үүсгэнэ үү. URL-ийн дундах ID-г хуулна уу.`]));
-    const cb1=el("div",{className:"code-block"});cb1.textContent="https://docs.google.com/spreadsheets/d/SPREADSHEET_ID_ЭНИЙГ_ХУУЛНА/edit";const cpb1=el("button",{className:"copy-btn"},["Хуулах"]);cpb1.onclick=()=>navigator.clipboard.writeText("https://docs.google.com/spreadsheets/d/SPREADSHEET_ID/edit").then(()=>toast("✓")).catch(()=>{});cb1.appendChild(cpb1);s1.appendChild(cb1);body.appendChild(s1);
-    // Step 2 — Apps Script
-    const GAS_CODE=`const SPREADSHEET_ID = "ТА_ЭНИЙГ_СОЛИНО";
-
-function doPost(e) {
-  try {
-    const data = JSON.parse(e.postData.contents);
-    const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
-    if (data.action === "addRecord") {
-      let sheet = ss.getSheetByName("Бүртгэл");
-      if (!sheet) {
-        sheet = ss.insertSheet("Бүртгэл");
-        sheet.appendRow(["Огноо","Цаг (УБ)","Нэр","Тасаг","Тушаал","Утас","Шалгалт","Зааварчилгаа"]);
-      }
-      const ubTime = Utilities.formatDate(new Date(), "Asia/Ulaanbaatar", "HH:mm");
-      sheet.appendRow([
-        data.date || Utilities.formatDate(new Date(), "Asia/Ulaanbaatar", "yyyy.MM.dd"),
-        data.time || ubTime,
-        data.name || "", data.department || "", data.position || "",
-        data.phone || "", data.passed || "", data.instrRead || ""
-      ]);
-      return ContentService.createTextOutput(JSON.stringify({ok:true}))
-        .setMimeType(ContentService.MimeType.JSON);
-    }
-    if (data.action === "syncWorkers") {
-      let sheet = ss.getSheetByName("Ажилтнууд");
-      if (!sheet) sheet = ss.insertSheet("Ажилтнууд");
-      sheet.clearContents();
-      sheet.appendRow(["Нэр","Тасаг","Тушаал","Утас"]);
-      (data.workers || []).forEach(w =>
-        sheet.appendRow([w.name||"", w.department||"", w.position||"", w.phone||""])
-      );
-      return ContentService.createTextOutput(JSON.stringify({ok:true}))
-        .setMimeType(ContentService.MimeType.JSON);
-    }
-    return ContentService.createTextOutput(JSON.stringify({ok:false}))
-      .setMimeType(ContentService.MimeType.JSON);
-  } catch(err) {
-    return ContentService.createTextOutput(JSON.stringify({ok:false,error:err.toString()}))
-      .setMimeType(ContentService.MimeType.JSON);
-  }
-}
-
-function doGet(e) {
-  try {
-    const action = e.parameter.action;
-    const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
-    if (action === "getToday") {
-      const date = e.parameter.date;
-      const sheet = ss.getSheetByName("Бүртгэл");
-      if (!sheet) return ok([], "records");
-      const rows = sheet.getDataRange().getValues();
-      const records = rows.slice(1).filter(r => String(r[0]) === date).map(r => ({
-        date:String(r[0]), time:String(r[1]), name:String(r[2]),
-        department:String(r[3]), position:String(r[4]),
-        phone:String(r[5]), passed:String(r[6])==="Тэнцсэн", instrRead:String(r[7])==="Тийм"
-      }));
-      return ok(records, "records");
-    }
-    if (action === "getWorkers") {
-      const sheet = ss.getSheetByName("Ажилтнууд");
-      if (!sheet) return ok([], "workers");
-      const rows = sheet.getDataRange().getValues();
-      const workers = rows.slice(1).filter(r => r[0]).map(r => ({
-        name:String(r[0]), department:String(r[1]), position:String(r[2]), phone:String(r[3])
-      }));
-      return ok(workers, "workers");
-    }
-    return ContentService.createTextOutput(JSON.stringify({ok:false}))
-      .setMimeType(ContentService.MimeType.JSON);
-  } catch(err) {
-    return ContentService.createTextOutput(JSON.stringify({ok:false,error:err.toString()}))
-      .setMimeType(ContentService.MimeType.JSON);
-  }
-}
-function ok(data, key) {
-  const obj = {ok:true}; if(key) obj[key]=data; else obj.records=data;
-  return ContentService.createTextOutput(JSON.stringify(obj)).setMimeType(ContentService.MimeType.JSON);
-}`;
-    const s2=el("div",{className:"guide-step fadeUp"});s2.appendChild(h("div",{className:"guide-step-head"},[h("div",{className:"guide-step-num"},["2"]),h("div",{className:"guide-step-title"},["Google Apps Script тохируулах"])]));
-    s2.appendChild(h("p",{},[`Sheets → Extensions → Apps Script → доорх кодыг буулгана уу.`]));
-    const cb2=el("div",{className:"code-block",style:{maxHeight:"280px",overflowY:"auto",fontSize:"10px"}});cb2.textContent=GAS_CODE;const cpb2=el("button",{className:"copy-btn"},["Хуулах"]);cpb2.onclick=()=>navigator.clipboard.writeText(GAS_CODE).then(()=>toast("Apps Script код хуулагдлаа ✓")).catch(()=>{});cb2.appendChild(cpb2);s2.appendChild(cb2);
-    s2.appendChild(h("ol",{style:{marginTop:"10px"}},[
-      h("li",{},["Deploy → New deployment → Web app"]),
-      h("li",{},["Execute as: Me · Who has access: Anyone"]),
-      h("li",{},["Deploy дарж URL-ийг SCRIPT_URL тохиргоонд оруулна"])
-    ]));
-    body.appendChild(s2);
-    // Step 3: HTML config
-    const s3=el("div",{className:"guide-step fadeUp"});s3.appendChild(h("div",{className:"guide-step-head"},[h("div",{className:"guide-step-num"},["3"]),h("div",{className:"guide-step-title"},["HTML CONFIG солих"])]));
-    const cb3=el("div",{className:"code-block",style:{fontSize:"10px"}});
-    cb3.textContent=`const SCRIPT_URL = "APPS_SCRIPT_DEPLOY_URL";\nconst SHEET_URL  = "SPREADSHEET_URL";\nconst APP_URL    = "GITHUB_PAGES_URL";\nconst ORG_NAME   = "БАЙГУУЛЛАГЫН НЭР";\nconst DEFAULT_PIN = "1234";\nconst DEPTS = ["1-р тасаг", "Захиргаа", ...];`;
-    s3.appendChild(cb3);body.appendChild(s3);
-    // Step 4: GitHub
-    const s4=el("div",{className:"guide-step fadeUp"});s4.appendChild(h("div",{className:"guide-step-head"},[h("div",{className:"guide-step-num"},["4"]),h("div",{className:"guide-step-title"},["GitHub Pages-т байрлуулах"])]));
-    s4.appendChild(h("ol",{},[h("li",{},["github.com → New repository (public)"]),h("li",{},["HTML файлыг index.html нэрээр upload хийнэ"]),h("li",{},["Settings → Pages → Deploy from branch: main"]),h("li",{},["URL-ийг APP_URL-д оруулж дахин upload хийнэ"])]));
-    body.appendChild(s4);
-    // Step 5: PIN
-    const s5=el("div",{className:"guide-step fadeUp"});s5.appendChild(h("div",{className:"guide-step-head"},[h("div",{className:"guide-step-num"},["5"]),h("div",{className:"guide-step-title"},["Анхны PIN солих ("+DEFAULT_PIN+")"])]));
-    s5.appendChild(h("p",{},[`Менежерийн хяналт → ⚙️ Тохиргоо → PIN код солих`]));body.appendChild(s5);
-    // Links
-    const linksCard=el("div",{className:"guide-step fadeUp",style:{background:"var(--gp)"}});linksCard.appendChild(h("div",{className:"guide-step-head"},[h("div",{className:"guide-step-num"},["🔗"]),h("div",{className:"guide-step-title"},["Хурдан холбоосууд"])]));
-    [{label:"📊 Google Sheets нээх",url:SHEET_URL,highlight:true},{label:"📡 Apps Script",url:"https://script.google.com"},{label:"🌐 GitHub Pages",url:"https://pages.github.com"}].forEach(lnk=>{
-      linksCard.appendChild(el("a",{href:lnk.url,target:"_blank",style:{display:"block",padding:"10px 12px",background:lnk.highlight?"var(--g)":"var(--wh)",color:lnk.highlight?"#fff":"var(--g)",borderRadius:"10px",fontSize:"13px",fontWeight:"700",textDecoration:"none",marginBottom:"6px",border:"1.5px solid var(--bdr)"}},[lnk.label]));
-    });body.appendChild(linksCard);
   }
 
   // ════════════════════════════════════════════════════════════
