@@ -142,7 +142,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--gp);color:var(--ink);min-
 // ════════════════════════════════════════════════════════════
 const SCRIPT_URL = "https://script.google.com/macros/s/ТАНЫ_APPS_SCRIPT_ID/exec";
 const SHEET_URL  = "https://docs.google.com/spreadsheets/d/ТАНЫ_SPREADSHEET_ID/edit";
-const APP_URL    = "https://ТАНЫ_GITHUB_PAGES_ХАЯГ/";
+const APP_URL    = "https://ulziibatbaatar-tech.github.io/HABEA-zagvar/";
 const ALERT_HOUR = 9, ALERT_MIN = 15;
 const DEFAULT_PIN = "1234";
 const DEFAULT_PASS_PCT = 80;
@@ -575,6 +575,17 @@ function renderPin(onOk,onBack){
 // ════════════════════════════════════════════════════════════
 // 📲 SHARE
 // ════════════════════════════════════════════════════════════
+function copyToClipboard(text,onOk,onFail){
+  if(navigator.clipboard&&window.isSecureContext){
+    navigator.clipboard.writeText(text).then(onOk).catch(()=>{legacyCopy(text,onOk,onFail);});
+  } else {legacyCopy(text,onOk,onFail);}
+}
+function legacyCopy(text,onOk,onFail){
+  const ta=document.createElement("textarea");ta.value=text;ta.style.cssText="position:fixed;top:0;left:0;opacity:0;";
+  document.body.appendChild(ta);ta.focus();ta.select();
+  try{const ok=document.execCommand("copy");document.body.removeChild(ta);if(ok)onOk();else onFail();}
+  catch(e){document.body.removeChild(ta);onFail();}
+}
 function renderShare(){
   const app=document.getElementById("app");app.innerHTML="";
   const page=el("div",{style:{minHeight:"100vh",background:"linear-gradient(160deg,var(--gd) 0%,var(--g) 55%,#1e5aaa 100%)",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:"24px",position:"relative",overflow:"hidden"}});
@@ -585,9 +596,19 @@ function renderShare(){
   const qrCard=el("div",{style:{background:"#fff",borderRadius:"28px",padding:"28px 28px 20px",textAlign:"center",boxShadow:"0 20px 60px rgba(0,0,0,.25)",maxWidth:"300px",width:"100%",marginBottom:"20px"}});
   qrCard.appendChild(el("img",{src:`https://api.qrserver.com/v1/create-qr-code/?size=200x200&color=0d2a5a&bgcolor=ffffff&data=${encodeURIComponent(APP_URL)}&qzone=2`,style:{width:"200px",height:"200px",display:"block",borderRadius:"12px",margin:"0 auto 16px"}}));
   qrCard.appendChild(h("div",{style:{fontSize:"12px",color:"var(--mut)",fontWeight:"600",letterSpacing:".05em",marginBottom:"12px"}},["📱 Камераар уншуулна уу"]));
-  const urlBox=el("div",{style:{background:"var(--gp)",borderRadius:"10px",padding:"8px 12px",fontSize:"11px",color:"var(--g)",fontWeight:"700",cursor:"pointer",wordBreak:"break-all",border:"1px solid var(--bdr)"}});
-  urlBox.textContent="🔗 "+APP_URL;
-  urlBox.onclick=()=>navigator.clipboard.writeText(APP_URL).then(()=>toast("Холбоос хуулагдлаа ✓")).catch(()=>toast("Гараар хуулна уу","info"));
+  // URL хэсэг
+  const urlBox=el("div",{style:{background:"var(--gp)",borderRadius:"10px",padding:"8px 12px",fontSize:"11px",color:"var(--g)",fontWeight:"700",cursor:"pointer",wordBreak:"break-all",border:"1px solid var(--bdr)",display:"flex",alignItems:"center",gap:"6px",justifyContent:"space-between"}});
+  const urlTxt=el("span",{style:{flex:"1",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",fontSize:"11px"}},["🔗 "+APP_URL]);
+  const copyBtn2=el("button",{style:{flexShrink:"0",background:"var(--g)",color:"#fff",border:"none",borderRadius:"8px",padding:"6px 14px",fontSize:"12px",fontWeight:"700",cursor:"pointer",fontFamily:"'DM Sans',sans-serif"}},["📋 Хуулах"]);
+  function doCopy(){
+    copyToClipboard(APP_URL,
+      ()=>{copyBtn2.textContent="✓ Хуулагдлаа";copyBtn2.style.background="var(--gl)";setTimeout(()=>{copyBtn2.textContent="📋 Хуулах";copyBtn2.style.background="var(--g)";},2500);toast("🔗 Холбоос хуулагдлаа ✓");},
+      ()=>{toast("Хуулахад алдаа гарлаа — гараар хуулна уу","err");}
+    );
+  }
+  copyBtn2.onclick=(e)=>{e.stopPropagation();doCopy();};
+  urlBox.onclick=()=>doCopy();
+  urlBox.appendChild(urlTxt);urlBox.appendChild(copyBtn2);
   qrCard.appendChild(urlBox);page.appendChild(qrCard);
   const btnWrap=el("div",{className:"fadeUp",style:{width:"100%",maxWidth:"300px",display:"flex",flexDirection:"column",gap:"10px"}});
   if(navigator.share){const sb=el("button",{style:{width:"100%",padding:"14px",background:"rgba(255,255,255,.15)",color:"#fff",border:"1px solid rgba(255,255,255,.3)",borderRadius:"14px",fontSize:"14px",fontWeight:"700",fontFamily:"'DM Sans',sans-serif",cursor:"pointer"}},["📤  Мессенжерээр илгээх"]);sb.onclick=()=>navigator.share({title:"ХАБЭА",text:"ХАБЭА бүртгэлийн систем",url:APP_URL}).catch(()=>{});btnWrap.appendChild(sb);}
